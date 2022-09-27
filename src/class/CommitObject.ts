@@ -20,29 +20,30 @@ export class CommitObject extends ObjectInGit implements GitCommitObject {
   constructor(rootDir: string, hash: string) {
     super(rootDir, hash);
 
-    // line 1, type, size and tree hash
-    const treeHash = splitBuffer(this.bufChunks[0])[1].toString();
-    this.treeHash = treeHash.split(' ')[1];
+    const content = this.bufChunks[1].toString();
 
-    // line 2, parent commit hash
-    const parentHash = this.bufChunks[1].toString();
-    this.parentHash = parentHash.split(' ')[1];
+    // get tree object hash
+    const treeHash = content.match(new RegExp('tree ([0-9a-f]{40})\n'));
+    this.treeHash = treeHash ? treeHash[1] : '';
+    
+    // get parent hash
+    const parentHash = content.match(new RegExp('parent ([0-9a-f]{40})\n'));
+    this.parentHash = parentHash ? parentHash[1] : '';
 
-    // line 3, author
-    const author = this.bufChunks[2].toString();
-    const authorName = author.match(new RegExp('author ([^<]+) <'));
+    // get author name and email
+    const authorName = content.match(new RegExp('author ([^<]+) <'));
     this.authorName = authorName ? authorName[1] : '';
-    const authorEmail = author.match(new RegExp('<([0-9a-zA-Z@.]+)>'));
+    const authorEmail = content.match(new RegExp('<([a-zA-Z0-9@.]+)>'));
     this.authorEmail = authorEmail ? authorEmail[1] : '';
 
-    // line 4, committer
-    const committer = this.bufChunks[3].toString();
-    const committerName = committer.match(new RegExp('committer ([^<]+) <'));
+    // get author name and email
+    const committerName = content.match(new RegExp('author ([^<]+) <'));
     this.committerName = committerName ? committerName[1] : '';
-    const committerEmail = committer.match(new RegExp('<([0-9a-zA-Z@.]+)>'));
+    const committerEmail = content.match(new RegExp('<([a-zA-Z0-9@.]+)>'));
     this.committerEmail = committerEmail ? committerEmail[1] : '';
 
-    // line 6, message
-    this.message = this.bufChunks[5].toString();
+    // message
+    const message = content.match(new RegExp('\n\n(.+)\n'));
+    this.message = message ? message[1] : '';
   }
 }

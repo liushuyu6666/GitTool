@@ -25,11 +25,11 @@ export class ObjectInGit {
     
     this.suffix = hash.slice(2, hash.length);
     
-    this.objectLoc = path.join(rootDir, 'objects', this.prefix, this.suffix);
+    this.objectLoc = path.join(rootDir, '.git', 'objects', this.prefix, this.suffix);
       
     const decryptedBuf = inflateSync(fs.readFileSync(this.objectLoc));
 
-    this.bufChunks = splitBuffer(decryptedBuf, '\n');
+    this.bufChunks = splitBuffer(decryptedBuf);
 
     const header = splitBuffer(this.bufChunks[0])[0].toString();
 

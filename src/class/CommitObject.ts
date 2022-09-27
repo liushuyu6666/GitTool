@@ -1,5 +1,4 @@
 import { GitCommitObject } from "../interface/GitCommitObject";
-import splitBuffer from "../helper/splitBuffer";
 import { ObjectInGit } from "./Object";
 
 export class CommitObject extends ObjectInGit implements GitCommitObject {

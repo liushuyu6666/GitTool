@@ -7,6 +7,6 @@ export class BlobObject extends ObjectInGit implements GitBlobObject{
   constructor(rootDir: string, hash: string) {
     super(rootDir, hash);
 
-    this.content = super.bufChunks[1].toString();
+    this.content = this.bufChunks[1].toString();
   }
 }

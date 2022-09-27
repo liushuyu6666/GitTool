@@ -1,13 +1,17 @@
-export interface GitCommitObject {
-  hash: string;
+import { GitObject } from "./GitObject";
 
-  prefix: string;
+export interface GitCommitObject extends GitObject {
+  treeHash: string;
 
-  suffix: string;
+  parentHash: string;
 
-  objectLoc: string;
+  message: string;
 
-  type: string;
+  authorName: string;
 
-  size: number;
+  authorEmail: string;
+
+  committerName: string;
+
+  committerEmail: string;
 }

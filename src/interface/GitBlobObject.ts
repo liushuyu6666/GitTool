@@ -1,25 +1,5 @@
-export interface GitBlobObject {
-  hash: string;
+import { GitObject } from "./GitObject";
 
-  prefix: string;
-
-  suffix: string;
-
-  /* absolute location of this object */
-  objectLoc: string;
-
-  // TODO: should be enum
-  type: string;
-
-  /* 
-    This is the Buffer size of the content;
-    Buffer.length != string.length if there are 
-    characters whose value larger than 127
-  */
-  size: number;
-
-  /*
-    content of snapshot of the file
-  */
+export interface GitBlobObject extends GitObject {
   content: string;
 }

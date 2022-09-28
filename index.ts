@@ -5,7 +5,7 @@ const rootDir: string = '/Users/shuyuliu/Coding/gitTest';
 
 function main() {
   const git = new Git(rootDir);
-  console.log(git.listTypes());
+  console.log(JSON.stringify(git.commitNodes, null, 2));
 }
 
 main();

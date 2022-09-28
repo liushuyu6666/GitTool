@@ -9,6 +9,7 @@ import createObject from "../object/createObject";
 import { BlobObject } from "./BlobObject";
 import { TreeObject } from "./TreeObject";
 import { CommitObject } from "./CommitObject";
+import { GitCommitNode } from "../interface/GitCommitNode";
 
 export class Git implements GitTool {
   rootDir: string;
@@ -23,6 +24,8 @@ export class Git implements GitTool {
 
   commitObjects: GitCommitObject[] = [];
 
+  commitNodes: GitCommitNode = {};
+
   constructor(rootDir: string) {
     this.rootDir = rootDir;
 
@@ -35,6 +38,35 @@ export class Git implements GitTool {
       if (obj.type === 'blob') this.blobObjects.push(obj as BlobObject);
       if (obj.type === 'tree') this.treeObjects.push(obj as TreeObject);
       if (obj.type === 'commit') this.commitObjects.push(obj as CommitObject);
+    })
+
+    this.commitObjects.forEach((commit) => {
+      const hash: string = commit.hash;
+      const parent = commit.parentHash;
+      const treeHash = commit.treeHash;
+
+      if (!this.commitNodes[hash]) {
+        this.commitNodes[hash] = {
+          prevHash: parent,
+          nextHash: [],
+          treeHash: treeHash,
+        }
+      } else {
+        this.commitNodes[hash].prevHash = parent;
+        this.commitNodes[hash].treeHash = treeHash;
+      }
+
+      if (parent) {
+        if (!this.commitNodes[parent]) {
+          this.commitNodes[parent] = {
+            prevHash: '',
+            nextHash: [hash],
+            treeHash: '',
+          }
+        } else {
+          this.commitNodes[parent].nextHash.push(hash);
+        }
+      }
     })
 
   }

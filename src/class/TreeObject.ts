@@ -9,22 +9,23 @@ export class TreeObject extends ObjectInGit implements GitTreeObject {
     super(rootDir, hash);
     
     if (this.bufChunks.length < 3) {
-      throw new Error(`chunks in ${this.hash} less than 3`);
-    }
-
-    let modeAndFile = this.bufChunks[1].toString();
-    let i = 2;
-    this.fileEntries = [];
-    while (modeAndFile.length > 0) {
-      const hash = this.bufChunks[i].slice(0, 20).toString('hex');
-      const fileEntry: FileEntry = {
-        'pointer': modeAndFile.split(' ')[1],
-        'mode': modeAndFile.split(' ')[0],
-        'hash': hash
+      console.error(`chunks in ${this.hash} less than 3`);
+      this.fileEntries = [];
+    } else {
+      let modeAndFile = this.bufChunks[1].toString();
+      let i = 2;
+      this.fileEntries = [];
+      while (modeAndFile.length > 0) {
+        const hash = this.bufChunks[i].slice(0, 20).toString('hex');
+        const fileEntry: FileEntry = {
+          'pointer': modeAndFile.split(' ')[1],
+          'mode': modeAndFile.split(' ')[0],
+          'hash': hash
+        }
+        this.fileEntries.push(fileEntry);
+        modeAndFile = this.bufChunks[i].slice(20).toString();
+        i++;
       }
-      this.fileEntries.push(fileEntry);
-      modeAndFile = this.bufChunks[i].slice(20).toString();
-      i++;
     }
   }
 }

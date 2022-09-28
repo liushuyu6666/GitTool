@@ -4,7 +4,7 @@ import { ObjectInGit } from "./Object";
 export class CommitObject extends ObjectInGit implements GitCommitObject {
   treeHash: string;
 
-  parentHash: string;
+  parentHashes: string[];
 
   message: string;
 
@@ -26,8 +26,8 @@ export class CommitObject extends ObjectInGit implements GitCommitObject {
     this.treeHash = treeHash ? treeHash[1] : '';
     
     // get parent hash
-    const parentHash = content.match(new RegExp('parent ([0-9a-f]{40})\n'));
-    this.parentHash = parentHash ? parentHash[1] : '';
+    const parentHashes = [...content.matchAll(new RegExp(/parent ([0-9a-f]{40})/g))];
+    this.parentHashes = parentHashes.map((parentHash) => parentHash[1]);
 
     // get author name and email
     const authorName = content.match(new RegExp('author ([^<]+) <'));

@@ -42,30 +42,34 @@ export class Git implements GitTool {
 
     this.commitObjects.forEach((commit) => {
       const hash: string = commit.hash;
-      const parent = commit.parentHash;
+      const parents = commit.parentHashes;
       const treeHash = commit.treeHash;
 
+      // check commit object itself
       if (!this.commitNodes[hash]) {
         this.commitNodes[hash] = {
-          prevHash: parent,
-          nextHash: [],
+          prevHashes: parents,
+          nextHashes: [],
           treeHash: treeHash,
         }
       } else {
-        this.commitNodes[hash].prevHash = parent;
+        this.commitNodes[hash].prevHashes = this.commitNodes[hash].prevHashes.concat(parents);
         this.commitNodes[hash].treeHash = treeHash;
       }
 
-      if (parent) {
-        if (!this.commitNodes[parent]) {
-          this.commitNodes[parent] = {
-            prevHash: '',
-            nextHash: [hash],
-            treeHash: '',
+      // check parent commit
+      if (parents.length > 0) {
+        commit.parentHashes.forEach((parent) => {
+          if (!this.commitNodes[parent]) {
+            this.commitNodes[parent] = {
+              prevHashes: [],
+              nextHashes: [hash],
+              treeHash: '',
+            }
+          } else {
+            this.commitNodes[parent].nextHashes.push(hash);
           }
-        } else {
-          this.commitNodes[parent].nextHash.push(hash);
-        }
+        })
       }
     })
 

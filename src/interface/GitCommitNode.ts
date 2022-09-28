@@ -1,7 +1,7 @@
 export interface GitCommitNodeValues {
-  prevHash: string;
+  prevHashes: string[];
 
-  nextHash: string[];
+  nextHashes: string[];
 
   treeHash: string;
 }

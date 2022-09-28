@@ -3,7 +3,7 @@ import { GitObject } from "./GitObject";
 export interface GitCommitObject extends GitObject {
   treeHash: string;
 
-  parentHash: string;
+  parentHashes: string[];
 
   message: string;
 

@@ -22,6 +22,10 @@ export class Git implements GitTool {
 
   treeObjects: GitTreeObject[] = [];
 
+  rootTreeObjects: GitTreeObject[] = [];
+
+  rootTreeHashes: string[] = [];
+
   commitObjects: GitCommitObject[] = [];
 
   commitNodes: GitCommitNode = {};
@@ -40,6 +44,12 @@ export class Git implements GitTool {
       if (obj.type === 'commit') this.commitObjects.push(obj as CommitObject);
     })
 
+    this.prepareCommitNodes();
+
+    this.prepareRootTreeNodes();
+  }
+
+  prepareCommitNodes() {
     this.commitObjects.forEach((commit) => {
       const hash: string = commit.hash;
       const parents = commit.parentHashes;
@@ -88,7 +98,16 @@ export class Git implements GitTool {
         })
       }
     })
+  }
 
+  prepareRootTreeNodes() {
+    this.rootTreeHashes = this.commitObjects.map((commit) => commit.treeHash);
+    
+    this.treeObjects.forEach((tree) => {
+      if (this.rootTreeHashes.includes(tree.hash)) {
+        this.rootTreeObjects.push(tree);
+      }
+    })
   }
 
   listObjects(): string[] {

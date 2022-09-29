@@ -11,7 +11,15 @@ export interface GitCommitObject extends GitObject {
 
   authorEmail: string;
 
+  authorTimestamp: string;
+
+  authorTimezone: string;
+
   committerName: string;
 
   committerEmail: string;
+
+  committerTimestamp: string;
+
+  committerTimezone: string;
 }

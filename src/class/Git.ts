@@ -44,6 +44,10 @@ export class Git implements GitTool {
       const hash: string = commit.hash;
       const parents = commit.parentHashes;
       const treeHash = commit.treeHash;
+      const name = commit.authorName;
+      const timestamp = commit.authorTimestamp;
+      const timezone = commit.authorTimezone;
+      const message = commit.message;
 
       // check commit object itself
       if (!this.commitNodes[hash]) {
@@ -51,10 +55,18 @@ export class Git implements GitTool {
           prevHashes: parents,
           nextHashes: [],
           treeHash: treeHash,
+          authorName: name,
+          authorTimestamp: timestamp,
+          authorTimezone: timezone,
+          message,
         }
       } else {
         this.commitNodes[hash].prevHashes = this.commitNodes[hash].prevHashes.concat(parents);
         this.commitNodes[hash].treeHash = treeHash;
+        this.commitNodes[hash].authorName = name;
+        this.commitNodes[hash].authorTimestamp = timestamp;
+        this.commitNodes[hash].authorTimezone = timezone;
+        this.commitNodes[hash].message = message;
       }
 
       // check parent commit
@@ -65,6 +77,10 @@ export class Git implements GitTool {
               prevHashes: [],
               nextHashes: [hash],
               treeHash: '',
+              authorName: '',
+              authorTimestamp: '',
+              authorTimezone: '',
+              message: '',
             }
           } else {
             this.commitNodes[parent].nextHashes.push(hash);

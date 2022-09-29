@@ -6,7 +6,7 @@ const rootDir: string = process.env.rootDir ?? '';
 
 function main() {
   const git = new Git(rootDir);
-  console.log(JSON.stringify(git.commitObjects, null, 2));
+  console.log(JSON.stringify(git.commitNodes, null, 2));
 }
 
 main();

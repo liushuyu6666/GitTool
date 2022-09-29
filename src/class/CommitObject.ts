@@ -44,7 +44,7 @@ export class CommitObject extends ObjectInGit implements GitCommitObject {
     this.authorEmail = authorEmail ? authorEmail[1] : '';
     const authorTimestamp = content.match(new RegExp('author [^<]+ <[a-zA-Z0-9@.]+> ([0-9]{10}) [+-]{0,1}[0-9]{4}'));
     this.authorTimestamp = authorTimestamp ? authorTimestamp[1] : '';
-    const authorTimezone = content.match(new RegExp('author [^<]+ <[a-zA-Z0-9@.]+> [0-9]{10} [+-]{0,1}([0-9]{4})'));
+    const authorTimezone = content.match(new RegExp('author [^<]+ <[a-zA-Z0-9@.]+> [0-9]{10} ([+-]{0,1}[0-9]{4})'));
     this.authorTimezone = authorTimezone ? authorTimezone[1]: '';
 
     // get author name and email
@@ -54,7 +54,7 @@ export class CommitObject extends ObjectInGit implements GitCommitObject {
     this.committerEmail = committerEmail ? committerEmail[1] : '';
     const committerTimestamp = content.match(new RegExp('committer [^<]+ <[a-zA-Z0-9@.]+> ([0-9]{10}) [+-]{0,1}[0-9]{4}'));
     this.committerTimestamp = committerTimestamp ? committerTimestamp[1] : '';
-    const committerTimezone = content.match(new RegExp('committer [^<]+ <[a-zA-Z0-9@.]+> [0-9]{10} [+-]{0,1}([0-9]{4})'));
+    const committerTimezone = content.match(new RegExp('committer [^<]+ <[a-zA-Z0-9@.]+> [0-9]{10} ([+-]{0,1}[0-9]{4})'));
     this.committerTimezone = committerTimezone ? committerTimezone[1]: '';
 
     // message

@@ -7,7 +7,8 @@ const rootDir: string = process.env.rootDir ?? '';
 
 function main() {
   const git = new Git(rootDir);
-  console.log(JSON.stringify(git.rootTreeObjects, null, 2));
+  git.toFlatTreeObjects();
+  console.log(JSON.stringify(git.flatTreeObjects, null, 2));
 }
 
 main();

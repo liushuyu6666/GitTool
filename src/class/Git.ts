@@ -10,6 +10,7 @@ import { BlobObject } from "./BlobObject";
 import { TreeObject } from "./TreeObject";
 import { CommitObject } from "./CommitObject";
 import { GitCommitNode } from "../interface/GitCommitNode";
+import { FlatTreeObject } from "../interface/FlatTreeObject";
 
 export class Git implements GitTool {
   rootDir: string;
@@ -30,6 +31,8 @@ export class Git implements GitTool {
 
   commitNodes: GitCommitNode = {};
 
+  flatTreeObjects: FlatTreeObject = {};
+
   constructor(rootDir: string) {
     this.rootDir = rootDir;
 
@@ -49,7 +52,7 @@ export class Git implements GitTool {
     this.prepareRootTreeNodes();
   }
 
-  prepareCommitNodes() {
+  prepareCommitNodes(): void {
     this.commitObjects.forEach((commit) => {
       const hash: string = commit.hash;
       const parents = commit.parentHashes;
@@ -100,13 +103,29 @@ export class Git implements GitTool {
     })
   }
 
-  prepareRootTreeNodes() {
+  prepareRootTreeNodes(): void {
     this.rootTreeHashes = this.commitObjects.map((commit) => commit.treeHash);
     
     this.treeObjects.forEach((tree) => {
       if (this.rootTreeHashes.includes(tree.hash)) {
         this.rootTreeObjects.push(tree);
       }
+    })
+  }
+
+  toFlatTreeObjects() {
+    this.treeObjects.forEach((tree) => {
+      const path: string[] = [];
+      tree.fileEntries.forEach((file) => {
+        if (parseInt(file.mode) === 40000) {
+          // this is a tree object
+          path.push(`${file.pointer}/${file.hash}`);
+        } else {
+          // this is not a tree object
+          path.push(`${file.pointer}`);
+        }
+      });
+      this.flatTreeObjects[tree.hash] = path;
     })
   }
 

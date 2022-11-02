@@ -14,6 +14,7 @@ export interface ManipulateBufferInterface {
 
 }
 
+// TODO: need setter and getter
 export class ManipulateBuffer implements ManipulateBufferInterface {
   buffer: Buffer;
 
@@ -24,7 +25,7 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
   constructor() {
     this.buffer = Buffer.alloc(0);
 
-    this.stock = 0; // one byte
+    this.stock = 0x00; // one byte
 
     this.capacityOfStock = 8;
   }
@@ -34,11 +35,11 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
   }
 
   assertStockIsByte() {
-    if (this.stock > 255) throw new Error('[ManipulateBuffer error]: stock more that one byte');
+    if (this.stock > 0xff) throw new Error('[ManipulateBuffer error]: stock more that one byte');
   }
 
   fill(value: number, validSize: number) {
-    if (value > 255 || value < 0) {
+    if (value > 0xff || value < 0) {
       throw new Error(`[ManipulateBuffer error]: input value is illegal`);
     }
     if (validSize > 8 || validSize < 1) {
@@ -50,8 +51,8 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
     value = value >> (8 - validSize) << (8 - validSize) // ensure only valid bits are left
 
     // bits left after loading
-    const toBeLeft = value << this.capacityOfStock;
-    const newValidSize = Math.min(0, validSize - this.capacityOfStock); // no bit left if it is 0
+    const toBeLeft = value << this.capacityOfStock & 0xff;
+    const newValidSize = Math.max(0, validSize - this.capacityOfStock); // no bit left if it is 0
 
     this.cleanTheStockTail();
 

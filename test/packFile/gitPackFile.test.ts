@@ -1,12 +1,12 @@
-import { inflateSync } from "zlib";
-import { GitIdxFile } from "../../src/packFile/GitIdxFile";
-import { GitPackFile } from "../../src/packFile/GitPackFile";
+import { inflateSync } from 'zlib';
+import { GitIdxFile } from '../../src/packFile/GitIdxFile';
+import { GitPackFile } from '../../src/packFile/GitPackFile';
 
 describe('test pack', () => {
   const filePath =
-    'gitTest/objects/pack/pack-5eb139577548314dffcb8e6410b30413a81ca3fb.pack';
-  const idxFilePath = 
-    'gitTest/objects/pack/pack-5eb139577548314dffcb8e6410b30413a81ca3fb.idx';
+    'gitTestSimple/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.pack';
+  const idxFilePath = 'gitTestSimple/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
+
   const gitIdx = new GitIdxFile(idxFilePath);
   const gitPack = new GitPackFile(filePath, gitIdx.fanout.offsets);
 
@@ -17,19 +17,31 @@ describe('test pack', () => {
   test('test data chunk', () => {
     const layer4 = gitPack.layer4;
     expect(Object.keys(layer4)).toMatchSnapshot('packObjectEntries');
-    expect(Object.keys(layer4).length).toBe(167);
+    expect(Object.keys(layer4).length).toBe(3);
   })
 
-  test('check OBJ_COMMIT', () => {
+  test('check OBJ_BLOB, we already know the hex is 3b18e512dba79e4c8300dd08aeb37f8e728b8dad from readme', () => {
     const layer4 = gitPack.layer4;
-    const buffer: Buffer[] = [];
-    Object.entries(layer4).forEach(([_, entry]) => {
-      // When type is OBJ_COMMIT
-      if (entry.type === 1) {
-        buffer.push(inflateSync(entry.content));
-      }
-    })
+    const blob = layer4['3b18e512dba79e4c8300dd08aeb37f8e728b8dad'];
 
-    expect(buffer).toMatchSnapshot('OBJ_COMMIT')
-  })
+    const decipher = inflateSync(blob.content).toString();
+    const real = 'hello world\n'; // Rememeber and the end of file there is a LF
+    
+    expect(decipher).toEqual(real);
+    expect(blob.variableLengthInteger).toBe(real.length);
+    expect(blob.type).toBe(3);
+  });
+
+  // test('check OBJ_TREE, we already know the hex is c3b8bb102afeca86037d5b5dd89ceeb0090eae9d from readme', () => {
+  //   const layer4 = gitPack.layer4;
+  //   const tree = layer4['c3b8bb102afeca86037d5b5dd89ceeb0090eae9d'];
+
+  //   const decipher = inflateSync(tree.content).toString();
+  //   // TODO: use the decipher function in GitObjectTree, and make this decipher as a independent function
+  //   const real = '100644 blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad	test.txt\n';
+    
+  //   expect(decipher).toEqual(real);
+  //   expect(tree.variableLengthInteger).toBe(real.length);
+  //   expect(tree.type).toBe(2);
+  // });
 });

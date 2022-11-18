@@ -1,4 +1,4 @@
-import { ManipulateBuffer } from "../manipulateBuffer/manipulateBuffer";
+import { ManipulateBuffer } from "../ManipulateBuffer/ManipulateBuffer";
 
 export interface GitObjectEntryInterface {
   type: number;
@@ -23,7 +23,7 @@ export class GitObjectEntry implements GitObjectEntryInterface {
 
     let contentStartIndex = 0;
 
-    [contentStartIndex, this.variableLengthInteger] = this.getAndParseVariableLengthInteger(chunk);
+    [this.variableLengthInteger, contentStartIndex] = this.getAndParseVariableLengthInteger(chunk);
 
     this.content = chunk.subarray(contentStartIndex);
   }

@@ -2,7 +2,7 @@ import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 
 describe('Test GitIdx Class', () => {
   const filePath =
-    'gitTest/objects/pack/pack-5eb139577548314dffcb8e6410b30413a81ca3fb.idx';
+    'gitTestSimple/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
   const gitIdx = new GitIdxFile(filePath);
 
   test('test header, should be [255, 116, 79, 99]', () => {
@@ -16,7 +16,7 @@ describe('Test GitIdx Class', () => {
   test('test entry size of fanout table', () => {
     const entrySize = gitIdx.fanout.entrySize;
 
-    expect(entrySize).toBe(167);
+    expect(entrySize).toBe(3);
   });
 
   test('test layer1 of fanout table', () => {
@@ -26,7 +26,7 @@ describe('Test GitIdx Class', () => {
       0,
     );
     expect(layer1).toMatchSnapshot('layer1');
-    expect(totalEntries).toBe(167);
+    expect(totalEntries).toBe(3);
   });
 
   test('test offsets of fanout table', () => {

@@ -19,6 +19,7 @@
     "fs": "^0.0.1-security"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest --updateSnapshot && jest",
+    "test updateSnapshot": "jest --updateSnapshot"
   }
 }

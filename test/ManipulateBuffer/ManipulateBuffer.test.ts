@@ -1,4 +1,4 @@
-import { ManipulateBuffer } from '../../src/ManipulateBuffer/ManipulateBuffer';
+import { ManipulateBuffer } from '../../src/manipulateBuffer/ManipulateBuffer';
 
 describe('test ManipulateBuffer class', () => {
   let stock: ManipulateBuffer;

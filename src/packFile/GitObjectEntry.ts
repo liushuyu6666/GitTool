@@ -1,4 +1,4 @@
-import { ManipulateBuffer } from "../ManipulateBuffer/ManipulateBuffer";
+import { ManipulateBuffer } from "../manipulateBuffer/ManipulateBuffer";
 
 export interface GitObjectEntryInterface {
   type: number;

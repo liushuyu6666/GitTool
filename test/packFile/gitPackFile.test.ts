@@ -1,6 +1,7 @@
 import { inflateSync } from 'zlib';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
+import { parseTreeEntryInPack } from '../../src/utils/tree';
 
 describe('test pack', () => {
   const filePath =
@@ -32,16 +33,21 @@ describe('test pack', () => {
     expect(blob.type).toBe(3);
   });
 
-  // test('check OBJ_TREE, we already know the hex is c3b8bb102afeca86037d5b5dd89ceeb0090eae9d from readme', () => {
-  //   const layer4 = gitPack.layer4;
-  //   const tree = layer4['c3b8bb102afeca86037d5b5dd89ceeb0090eae9d'];
+  test('check OBJ_TREE (one entry), we already know the hex is c3b8bb102afeca86037d5b5dd89ceeb0090eae9d from readme', () => {
+    const layer4 = gitPack.layer4;
+    const tree = layer4['c3b8bb102afeca86037d5b5dd89ceeb0090eae9d'];
 
-  //   const decipher = inflateSync(tree.content).toString();
-  //   // TODO: use the decipher function in GitObjectTree, and make this decipher as a independent function
-  //   const real = '100644 blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad	test.txt\n';
+    const decipher = inflateSync(tree.content);
+    const {
+      mode,
+      fileName,
+      hex
+    } = parseTreeEntryInPack(decipher);
+    // TODO: use the decipher function in GitObjectTree, and make this decipher as a independent function
+    const real = '100644 3b18e512dba79e4c8300dd08aeb37f8e728b8dad test.txt';
     
-  //   expect(decipher).toEqual(real);
-  //   expect(tree.variableLengthInteger).toBe(real.length);
-  //   expect(tree.type).toBe(2);
-  // });
+    expect(`${mode} ${hex} ${fileName}`).toEqual(real);
+    expect(tree.variableLengthInteger).toBe(mode.length + (hex.length / 2) + fileName.length + 2);
+    expect(tree.type).toBe(2);
+  });
 });

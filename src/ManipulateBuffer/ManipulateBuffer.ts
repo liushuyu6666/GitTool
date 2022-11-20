@@ -139,3 +139,4 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
     return final;
   }
 }
+

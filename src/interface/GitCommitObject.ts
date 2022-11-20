@@ -1,25 +1,25 @@
-import { GitObject } from "./GitObject";
+// import { GitObject } from "./GitObject";
 
-export interface GitCommitObject extends GitObject {
-  treeHash: string;
+// export interface GitCommitObject extends GitObject {
+//   treeHash: string;
 
-  parentHashes: string[];
+//   parentHashes: string[];
 
-  message: string;
+//   message: string;
 
-  authorName: string;
+//   authorName: string;
 
-  authorEmail: string;
+//   authorEmail: string;
 
-  authorTimestamp: string;
+//   authorTimestamp: string;
 
-  authorTimezone: string;
+//   authorTimezone: string;
 
-  committerName: string;
+//   committerName: string;
 
-  committerEmail: string;
+//   committerEmail: string;
 
-  committerTimestamp: string;
+//   committerTimestamp: string;
 
-  committerTimezone: string;
-}
+//   committerTimezone: string;
+// }

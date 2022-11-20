@@ -21,7 +21,10 @@
       "@typescript-eslint/no-unused-vars": "error",
       "no-console": "error",
       "simple-import-sort/exports": "error",
-      "simple-import-sort/imports": "error"
+      "simple-import-sort/imports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error"
     },
     "plugins": ["import", "simple-import-sort"],
     "ignorePatterns": [

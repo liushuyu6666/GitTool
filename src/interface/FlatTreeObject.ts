@@ -1,3 +1,3 @@
-export interface FlatTreeObject {
-  [hash: string]: string[]
-}
+// export interface FlatTreeObject {
+//   [hash: string]: string[]
+// }

@@ -1,39 +1,39 @@
-import path from "path";
-import fs from "fs";
-import { inflateSync } from "zlib";
-import splitBuffer from "../helper/splitBuffer";
+// import path from "path";
+// import fs from "fs";
+// import { inflateSync } from "zlib";
+// import splitBuffer from "../utils/splitBuffer";
 
-export class ObjectInGit {
-  hash: string;
+// export class ObjectInGit {
+//   hash: string;
 
-  prefix: string;
+//   prefix: string;
 
-  suffix: string;
+//   suffix: string;
 
-  objectLoc: string;
+//   objectLoc: string;
 
-  bufChunks: Buffer[];
+//   bufChunks: Buffer[];
 
-  type: string;
+//   type: string;
 
-  size: number;
+//   size: number;
 
-  constructor(rootDir: string, hash: string) {
-    this.hash = hash;
+//   constructor(rootDir: string, hash: string) {
+//     this.hash = hash;
     
-    this.prefix = hash.slice(0, 2);
+//     this.prefix = hash.slice(0, 2);
     
-    this.suffix = hash.slice(2, hash.length);
+//     this.suffix = hash.slice(2, hash.length);
     
-    this.objectLoc = path.join(rootDir, '.git', 'objects', this.prefix, this.suffix);
+//     this.objectLoc = path.join(rootDir, '.git', 'objects', this.prefix, this.suffix);
       
-    const decryptedBuf = inflateSync(fs.readFileSync(this.objectLoc));
+//     const decryptedBuf = inflateSync(fs.readFileSync(this.objectLoc));
 
-    this.bufChunks = splitBuffer(decryptedBuf);
+//     this.bufChunks = splitBuffer(decryptedBuf);
 
-    const header = splitBuffer(this.bufChunks[0])[0].toString();
+//     const header = splitBuffer(this.bufChunks[0])[0].toString();
 
-    this.type = header.split(' ')[0];
-    this.size = parseInt(header.split(' ')[1]);
-  }
-}
+//     this.type = header.split(' ')[0];
+//     this.size = parseInt(header.split(' ')[1]);
+//   }
+// }

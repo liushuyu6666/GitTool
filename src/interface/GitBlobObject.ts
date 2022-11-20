@@ -1,5 +1,5 @@
-import { GitObject } from "./GitObject";
+// import { GitObject } from "./GitObject";
 
-export interface GitBlobObject extends GitObject {
-  content: string;
-}
+// export interface GitBlobObject extends GitObject {
+//   content: string;
+// }

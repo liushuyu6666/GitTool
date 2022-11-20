@@ -1,7 +1,7 @@
 import { inflateSync } from 'zlib';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
-import { parseTreeEntryInPack } from '../../src/utils/tree';
+import { parseTreeEntryInPack } from '../../src/utils/gitObjectParse/tree';
 
 describe('test pack', () => {
   const filePath =
@@ -40,14 +40,14 @@ describe('test pack', () => {
     const decipher = inflateSync(tree.content);
     const {
       mode,
-      fileName,
-      hex
+      pointer,
+      hash
     } = parseTreeEntryInPack(decipher);
     // TODO: use the decipher function in GitObjectTree, and make this decipher as a independent function
     const real = '100644 3b18e512dba79e4c8300dd08aeb37f8e728b8dad test.txt';
     
-    expect(`${mode} ${hex} ${fileName}`).toEqual(real);
-    expect(tree.variableLengthInteger).toBe(mode.length + (hex.length / 2) + fileName.length + 2);
+    expect(`${mode} ${hash} ${pointer}`).toEqual(real);
+    expect(tree.variableLengthInteger).toBe(mode.length + (hash.length / 2) + pointer.length + 2);
     expect(tree.type).toBe(2);
   });
 });

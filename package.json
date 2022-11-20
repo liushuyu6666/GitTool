@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.2",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
     "fs": "^0.0.1-security",
     "zlib": "^1.0.5"
   },

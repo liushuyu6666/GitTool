@@ -1,25 +1,25 @@
-import { GitBlobObject } from "./GitBlobObject";
-import { GitCommitNode } from "./GitCommitNode";
-import { GitCommitObject } from "./GitCommitObject";
-import { GitTreeObject } from "./GitTreeObject";
+// import { GitBlobObject } from "./GitBlobObject";
+// import { GitCommitNode } from "./GitCommitNode";
+// import { GitCommitObject } from "./GitCommitObject";
+// import { GitTreeObject } from "./GitTreeObject";
 
-export interface GitTool {
-  rootDir: string;
+// export interface GitTool {
+//   rootDir: string;
 
-  objectDir: string;
+//   objectDir: string;
 
-  allObjects: string[];
+//   allObjects: string[];
 
-  blobObjects: GitBlobObject[];
+//   blobObjects: GitBlobObject[];
 
-  treeObjects: GitTreeObject[];
+//   treeObjects: GitTreeObject[];
 
-  rootTreeObjects: GitTreeObject[];
+//   rootTreeObjects: GitTreeObject[];
 
-  rootTreeHashes: string[];
+//   rootTreeHashes: string[];
 
-  commitObjects: GitCommitObject[];
+//   commitObjects: GitCommitObject[];
 
-  commitNodes: GitCommitNode;
+//   commitNodes: GitCommitNode;
 
-}
+// }

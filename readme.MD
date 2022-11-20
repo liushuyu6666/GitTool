@@ -1,54 +1,126 @@
-# gitTestSimple
-## Object
-### blob
-hex: `3b18e512dba79e4c8300dd08aeb37f8e728b8dad`
+# gitTestSimple test kit
+This kit contains couple simple files for unit test.
 
-```
-hello world
-```
+## pack object
+
+1. `5fec731b51ec842da6351423114d4bbee41e7aee`
+   1. blob, hex: `3b18e512dba79e4c8300dd08aeb37f8e728b8dad`
+        ```
+        hello world
+        ```
+
+   2. tree, hex: `c3b8bb102afeca86037d5b5dd89ceeb0090eae9d`
+   
+        ```
+        100644 blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad	test.txt
+        ```
+
+   3. commit, hex: `c17358365df785db682260407606051b011eee88`
+        ```
+        tree c3b8bb102afeca86037d5b5dd89ceeb0090eae9d
+        author ShuyuLiuFQ <ShuyuLiuFQ@foxquilt.com> 1668786849 -0500
+        committer ShuyuLiuFQ <ShuyuLiuFQ@foxquilt.com> 1668786849 -0500
+
+        first commit
+        ```
+
+## git object
+
+### blob
+1. `2129cac3bcef43797f755ba6105c32d4a3f1ace0`
+   The content is:
+   ```
+   This is the second blob
+   This is not the third line
+   ```
+
+2. `fffbf73fb93d922f351ee5b7311e1edb1c76b427`
+   The content is:
+   ```
+   This is the first blob
+   This is the second line
+   ```
+
+3. `00fea2f4d78299c796a53ecbd9b59938a97e6d67`
+   The content is:
+   ```
+   This is the second blob
+   This is not the fourth line
+   we add one new line here
+   ```
 
 ### tree
-hex: `c3b8bb102afeca86037d5b5dd89ceeb0090eae9d`
+1. `326ae25c4e61cba56782e9e37a19d0bbcf9b694e`
+   The content is:
+   ```
+   100644 blob 2129cac3bcef43797f755ba6105c32d4a3f1ace0	new.txt
+   ```
+   
+2. `a5e8ef5f17e278727d3f18a309cba4be8f6ba2c8`
+   The content is:
+   ```
+   040000 tree 326ae25c4e61cba56782e9e37a19d0bbcf9b694e	bak
+   100644 blob fffbf73fb93d922f351ee5b7311e1edb1c76b427	test.txt
+   ```
 
-```
-100644 blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad	test.txt
-```
+3. `cfa7f29b1f343be510053c499f717e0c23f4dba0`
+   The content is:
+   ```
+   100644 blob 00fea2f4d78299c796a53ecbd9b59938a97e6d67	new.txt
+   ```
 
+4. `08c5082aa833173f6fe08a6ffaa05bf49322b6cd`
+   The content is:
+   ```
+   040000 tree cfa7f29b1f343be510053c499f717e0c23f4dba0	bak
+   100644 blob fffbf73fb93d922f351ee5b7311e1edb1c76b427	test.txt
+   ```
 
 ### commit
-hex: `c17358365df785db682260407606051b011eee88`
+1. `d44f8c06583e525e7885ec701c04a067e061bd94`
+   The content is:
+   ```
+   tree a5e8ef5f17e278727d3f18a309cba4be8f6ba2c8
+   author shuyu liu <liushuyu6666@gmail.com> 1668874023 -0500
+   committer shuyu liu <liushuyu6666@gmail.com> 1668874023 -0500
+   
+   This is the first commit, with two files and one folder
+   ```
 
-```
-tree c3b8bb102afeca86037d5b5dd89ceeb0090eae9d
-author ShuyuLiuFQ <ShuyuLiuFQ@foxquilt.com> 1668786849 -0500
-committer ShuyuLiuFQ <ShuyuLiuFQ@foxquilt.com> 1668786849 -0500
+2. `7c556ca93b467f8f8247acf522915f2f9e048eb5`
+   The content is:
+   ```
+   tree 08c5082aa833173f6fe08a6ffaa05bf49322b6cd
+   parent d44f8c06583e525e7885ec701c04a067e061bd94
+   author shuyu liu <liushuyu6666@gmail.com> 1668893946 -0500
+   committer shuyu liu <liushuyu6666@gmail.com> 1668893946 -0500
+   
+   This is the second commit
+   ```
 
-first commit
-```
 
-### pack
-hex: `5fec731b51ec842da6351423114d4bbee41e7aee`
-# Class and Interface
+
+# GitObject kit
 ## GitObject Class and Interface
-`GitObject` class will be a base class for other three objects - `blob`, `tree` and `commit`, `GitObject` class will store static values and avoid parse or decrypt the content of objects, just for saving space.
+`GitObject` class works for three objects - `blob`, `tree` and `commit`. When creating a new `GitObject` class, 8 common static values will be populated first, but the `data` field will be undefined. At this point the type of the object is unknown. The `differentiating` method will get the specific type of the object and populate the `data` according to the type of the object.
+There is no independent `blob`, `tree` or `commit` objects.
 The static values include:
-1. hash (string): 20 bytes hex SHA1
-2. prefix (string): the first 1 byte of the hash
-3. suffix (string): the last 19 bytes of the hash
-4. type (enum): initialize as a `NonDiff`, after running `differentiating` it can be `Blob`, `Tree` and `Commit`.
-5. size (number): initialize as 0, after running `differentiating` it can be populated.
-6. data (enum): initialize as undefined, after running `differentiating` it can be `BlobData`, `TreeData` and `CommitData`. **This might take too much memory, need to be optimized**
-
-There are some methods to touch the content:
-1. differentiating: The raw content will first be decrypted via `inflate` algorithm and then split it into chunks. Then the `type` and `size` will be populated. ~~The chunks called `bufChunks` will be returned~~. Finally the `data` will be selected and filled.
+1. hash (string): 20 bytes hex SHA1.
+2. prefix (string): The first 1 byte of the hash.
+3. suffix (string): The last 19 bytes of the hash.
+4. objectLoc (string): The location of the object file.
+5. dividedDecryptedBuffer (Buffer []): The buffer array from buffer divided by `\u0000`.
+6. header (string): The header, contains type and size.
+7. size (number): The size of the file by bytes.
+8. data (undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData): Initialize as undefined, after running `differentiating` it can be `GitBlobObjectData`, `GitTreeObjectData` and `GitCommitObjectData`. **This might take too much memory, need to be optimized, like print to a file.**
 
 ## BlobData Interface
-`BlobData` will have one field.
+`GitBlobObjectData` will have one field.
 1. content (string): the content of the file
 
 ## TreeData Interface
-`TreeData` will have one field.
-1. fileEntries (FileEntry[]): `fileEntries` records all entries under the tree object.
+`GitTreeObjectData` will have one field.
+1. fileEntries (GitTreeObjectFileEntry[]): `fileEntries` records all entries under the tree object.
 
 ## Commit Interface
 There are couple fields.

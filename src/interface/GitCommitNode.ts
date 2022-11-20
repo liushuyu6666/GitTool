@@ -1,19 +1,19 @@
-export interface GitCommitNodeValues {
-  prevHashes: string[];
+// export interface GitCommitNodeValues {
+//   prevHashes: string[];
 
-  nextHashes: string[];
+//   nextHashes: string[];
 
-  treeHash: string;
+//   treeHash: string;
 
-  authorName: string;
+//   authorName: string;
 
-  authorTimestamp: string;
+//   authorTimestamp: string;
 
-  authorTimezone: string;
+//   authorTimezone: string;
 
-  message: string;
-}
+//   message: string;
+// }
 
-export interface GitCommitNode {
-  [hash: string] : GitCommitNodeValues;
-}
+// export interface GitCommitNode {
+//   [hash: string] : GitCommitNodeValues;
+// }

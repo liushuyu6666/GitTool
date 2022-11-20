@@ -1,6 +1,6 @@
-import { FileEntry } from "./FileEntry";
-import { GitObject } from "./GitObject";
+// import { FileEntry } from "./FileEntry";
+// import { GitObject } from "./GitObject";
 
-export interface GitTreeObject extends GitObject {
-  fileEntries: FileEntry[];
-}
+// export interface GitTreeObject extends GitObject {
+//   fileEntries: FileEntry[];
+// }

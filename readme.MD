@@ -114,15 +114,15 @@ The static values include:
 7. size (number): The size of the file by bytes.
 8. data (undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData): Initialize as undefined, after running `differentiating` it can be `GitBlobObjectData`, `GitTreeObjectData` and `GitCommitObjectData`. **This might take too much memory, need to be optimized, like print to a file.**
 
-## BlobData Interface
+### GitBlobObjectData Interface
 `GitBlobObjectData` will have one field.
 1. content (string): the content of the file
 
-## TreeData Interface
+### GitTreeObjectData Interface
 `GitTreeObjectData` will have one field.
 1. fileEntries (GitTreeObjectFileEntry[]): `fileEntries` records all entries under the tree object.
 
-## Commit Interface
+### GitCommitObjectData Interface
 There are couple fields.
 1. treeHash (string): 20 bytes SHA1 hash of the root tree
 2. parentHashes (string[]): parent commits hash
@@ -135,3 +135,10 @@ There are couple fields.
 9. committerEmail (string)
 10. committerTimestamp (string)
 11. committerTimezone (string)
+
+## util functions
+### gitObjectParse
+Functions under this folder are used for parse the content.
+
+### getGitObjectType
+Transfer the string to `enum` type.

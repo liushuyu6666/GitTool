@@ -1,4 +1,4 @@
-export enum Mode {
-  normal = '100644',
-  tree = '040000',
-}
+// export enum Mode {
+//   normal = '100644',
+//   tree = '040000',
+// }

@@ -14,6 +14,11 @@ export enum GitObjectType {
   UNDEFINED = 'undefined',
 }
 
+export enum Mode {
+  normal = '100644',
+  tree = '040000',
+}
+
 interface GitObjectInterface {
   hash: string;
 

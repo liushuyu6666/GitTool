@@ -72,6 +72,7 @@ export class GitObject implements GitObjectInterface {
     );
 
     const decryptedBuf = inflateSync(fs.readFileSync(this.objectLoc));
+    console.log(decryptedBuf.toString('hex'));
 
     this.dividedDecryptedBuffer = splitBuffer(decryptedBuf);
 

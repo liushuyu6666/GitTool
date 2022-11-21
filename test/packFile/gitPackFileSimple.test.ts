@@ -1,7 +1,7 @@
 import { inflateSync } from 'zlib';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
-import { parseTreeEntryInPack } from '../../src/utils/gitObjectParse/tree';
+import { parseTreeEntry } from '../../src/utils/gitObjectParse/tree';
 
 describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, tree and commit.', () => {
   const filePath =
@@ -42,7 +42,7 @@ describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, 
       mode,
       pointer,
       hash
-    } = parseTreeEntryInPack(decipher);
+    } = parseTreeEntry(decipher);
     // TODO: use the decipher function in GitObjectTree, and make this decipher as a independent function
     const real = '100644 3b18e512dba79e4c8300dd08aeb37f8e728b8dad test.txt';
     

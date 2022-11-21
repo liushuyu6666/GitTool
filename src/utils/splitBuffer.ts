@@ -1,4 +1,4 @@
-export default function (buffer: Buffer, delimiter='\u0000') {
+export default function (buffer: Buffer, delimiter=0x00) {
   const bufferArray: Buffer[] = [];
 
   let left: Buffer = buffer;

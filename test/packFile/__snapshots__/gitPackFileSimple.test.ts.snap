@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test pack test data chunk: packObjectEntries 1`] = `
+exports[`Test .pack and .idx file from the gitTestSimple kit, where we only have blob, tree and commit test data chunk: packObjectEntries 1`] = `
 [
   "c17358365df785db682260407606051b011eee88",
   "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",

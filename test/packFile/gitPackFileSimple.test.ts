@@ -3,10 +3,10 @@ import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
 import { parseTreeEntryInPack } from '../../src/utils/gitObjectParse/tree';
 
-describe('test pack', () => {
+describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, tree and commit.', () => {
   const filePath =
-    'gitTestSimple/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.pack';
-  const idxFilePath = 'gitTestSimple/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
+    'gitTestSimple/.git/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.pack';
+  const idxFilePath = 'gitTestSimple/.git/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
 
   const gitIdx = new GitIdxFile(idxFilePath);
   const gitPack = new GitPackFile(filePath, gitIdx.fanout.offsets);

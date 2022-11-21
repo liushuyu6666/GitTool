@@ -1,3 +1,3 @@
-export function parseBlobObjectContent(dividedDecryptedBuffer: Buffer[]): string {
-  return dividedDecryptedBuffer[1].toString();
+export function parseBlobObjectContent(body: Buffer): string {
+  return body.toString();
 }

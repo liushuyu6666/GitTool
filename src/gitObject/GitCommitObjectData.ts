@@ -12,8 +12,8 @@ export class GitCommitObjectData implements GitCommitObjectInterface {
 
   commitData: CommitObjectInfo;
 
-  constructor(dividedDecryptedBuffer: Buffer[]) {
+  constructor(body: Buffer) {
     this.type = GitObjectType.COMMIT;
-    this.commitData = parseCommitObjectContent(dividedDecryptedBuffer);
+    this.commitData = parseCommitObjectContent(body);
   }
 }

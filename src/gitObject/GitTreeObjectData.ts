@@ -15,10 +15,10 @@ export class GitTreeObjectData implements GitTreeObjectInterface {
 
   fileEntries: GitTreeObjectFileEntry[];
 
-  constructor(dividedDecryptedBuffer: Buffer[], hash: string) {
+  constructor(body: Buffer, hash: string) {
     this.type = GitObjectType.TREE;
 
-    this.fileEntries = parseTreeObjectContent(dividedDecryptedBuffer);
+    this.fileEntries = parseTreeObjectContent(body);
     if (this.fileEntries.length === 0) {
       throw new Error(`chunks in ${hash} less than 3`);
     }

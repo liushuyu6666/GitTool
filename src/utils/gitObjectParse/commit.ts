@@ -17,8 +17,8 @@ export interface CommitObjectInfo {
   message: string;
 }
 
-export function parseCommitObjectContent(dividedDecryptedBuffer: Buffer[]): CommitObjectInfo {
-  const content = dividedDecryptedBuffer[1].toString();
+export function parseCommitObjectContent(body: Buffer): CommitObjectInfo {
+  const content = body.toString();
 
   // get tree object hash
   const treeHashTemp = content.match(new RegExp('tree ([0-9a-f]{40})\n'));

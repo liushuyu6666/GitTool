@@ -3,9 +3,9 @@ import { GitBlobObjectData } from './GitBlobObjectData';
 import { GitTreeObjectData } from './GitTreeObjectData';
 import { inflateSync } from 'zlib';
 import fs from 'fs';
-import splitBuffer from '../utils/splitBuffer';
 import getGitObjectType from '../utils/getGitObjectType';
 import { GitCommitObjectData } from './GitCommitObjectData';
+import splitHeaderAndBody from '../utils/splitHeaderAndBody';
 
 export enum GitObjectType {
   BLOB = 'blob',
@@ -26,11 +26,7 @@ interface GitObjectInterface {
 
   suffix: string;
 
-  objectLoc: string;
-
-  dividedDecryptedBuffer: Buffer[];
-
-  header: string;
+  type: GitObjectType;
 
   size: number;
 
@@ -46,13 +42,11 @@ export class GitObject implements GitObjectInterface {
 
   suffix: string;
 
-  objectLoc: string;
-
-  dividedDecryptedBuffer: Buffer[];
-
-  header: string;
+  type: GitObjectType;
 
   size: number;
+
+  body: Buffer;
 
   data: undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData;
 
@@ -63,7 +57,7 @@ export class GitObject implements GitObjectInterface {
 
     this.suffix = hash.slice(2, hash.length);
 
-    this.objectLoc = path.join(
+    const objectLoc = path.join(
       rootDir,
       '.git',
       'objects',
@@ -71,32 +65,35 @@ export class GitObject implements GitObjectInterface {
       this.suffix,
     );
 
-    const decryptedBuf = inflateSync(fs.readFileSync(this.objectLoc));
-    console.log(decryptedBuf.toString('hex'));
+    const decryptedBuf = inflateSync(fs.readFileSync(objectLoc));
 
-    this.dividedDecryptedBuffer = splitBuffer(decryptedBuf);
+    const [header, body] = splitHeaderAndBody(decryptedBuf);
 
-    this.header = splitBuffer(this.dividedDecryptedBuffer[0])[0].toString();
+    const headerStr = header.toString();
 
-    this.size = parseInt(this.header.split(' ')[1]);
+    this.body = body;
+
+    this.size = parseInt(headerStr.split(' ')[1]);
+
+    this.type = getGitObjectType(headerStr.split(' ')[0])
 
     this.data = undefined;
   }
 
   differentiating() {
-    const type = getGitObjectType(this.header.split(' ')[0]);
+    const type = this.type;
     switch (type) {
       case GitObjectType.BLOB:
-        this.data = new GitBlobObjectData(this.dividedDecryptedBuffer);
+        this.data = new GitBlobObjectData(this.body);
         break;
       case GitObjectType.TREE:
         this.data = new GitTreeObjectData(
-          this.dividedDecryptedBuffer,
+          this.body,
           this.hash,
         );
         break;
       case GitObjectType.COMMIT:
-        this.data = new GitCommitObjectData(this.dividedDecryptedBuffer);
+        this.data = new GitCommitObjectData(this.body);
         break;
       default:
         throw new Error(`${this.hash} can\'t be differentiated the GitObject.`);

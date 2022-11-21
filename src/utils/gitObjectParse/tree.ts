@@ -37,37 +37,30 @@ export interface GitTreeObjectFileEntry {
 //   return fileEntries;
 // }
 
+function convertTreeObjectBodyToArray(body: Buffer): Buffer[] {
+  const buffer: Buffer[] = [];
+  let curr: Buffer = body;
+  let idx: number;
+  while (curr.length > 0) {
+    idx = curr.indexOf(0x00) + 21; // need to point to the end of the 20BytesHex
+    buffer.push(curr.subarray(0, idx));
+    curr = curr.subarray(idx);
+  }
+
+  return buffer;
+}
+
 /**
  *
- * @param dividedDecryptedBuffer The array of decrypted buffer divided by 0x00.
- * The format:
- *   1. The first element `dividedDecryptedBuffer[0]`: {tree}0x20${size}.
- *   2. The second element `${modeNumber}0x20${fileName}`.
- *   3. The third element `${20bytesHex}${modeNumber}0x20${fileName}`.
- *   4. The forth element `${20bytesHex}${modeNumber}0x20${fileName}`.
- *   5. The last element `${20bytesHex}`
- * We process the array to assemble the entry `${modeNumber}0x20${fileName}0x00${20bytesHex}`
+ * @param body The deflated body of the GitTreeObject.
+ * The format: `${modeNumber}0x20${fileName}0x00${20bytesHex}${modeNumber}0x20${fileName}0x00${20bytesHex}`
  * @returns An `GitTreeObjectFileEntry` array.
  */
 export function parseTreeObjectContent(
-  dividedDecryptedBuffer: Buffer[],
+  body: Buffer,
 ): GitTreeObjectFileEntry[] {
-  const fileEntries: GitTreeObjectFileEntry[] = [];
-
-  // start from the second element and end at the last one.
-  let former = dividedDecryptedBuffer[1];
-  for (let i = 2; i < dividedDecryptedBuffer.length; i++) {
-    const concat = Buffer.concat([
-      former, // `${modeNumber}0x20${fileName}`
-      Uint8Array.from([0x00]),
-      dividedDecryptedBuffer[i].subarray(0, 20), // `${20bytesHex}`
-    ]);
-    const fileEntry = parseTreeEntry(concat);
-    fileEntries.push(fileEntry);
-    former = dividedDecryptedBuffer[i].subarray(20);
-  }
-
-  return fileEntries;
+  const fileBufferArray = convertTreeObjectBodyToArray(body);
+  return fileBufferArray.map((file) => parseTreeEntry(file))
 }
 
 /**

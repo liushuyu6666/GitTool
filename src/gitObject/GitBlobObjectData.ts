@@ -12,8 +12,8 @@ export class GitBlobObjectData implements GitBlobObjectInterface {
 
   content: string;
 
-  constructor(dividedDecryptedBuffer: Buffer[]) {
+  constructor(body: Buffer) {
     this.type = GitObjectType.BLOB;
-    this.content = parseBlobObjectContent(dividedDecryptedBuffer);
+    this.content = parseBlobObjectContent(body);
   }
 }

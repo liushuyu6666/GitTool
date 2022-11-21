@@ -100,29 +100,42 @@ This kit contains couple simple files for unit test.
 
 
 
+
+
+
 # GitObject kit
 ## GitObject Class and Interface
-`GitObject` class works for three objects - `blob`, `tree` and `commit`. When creating a new `GitObject` class, 8 common static values will be populated first, but the `data` field will be undefined. At this point the type of the object is unknown. The `differentiating` method will get the specific type of the object and populate the `data` according to the type of the object.
+`GitObject` class works for three objects - `blob`, `tree` and `commit`. When creating a new `GitObject` class, the common static values will be populated first, but the `data` field will be undefined. At this point the type of the object is known. The `differentiating` method will inflate the body of the object and populate the `data` according to the type of the object.
 There is no independent `blob`, `tree` or `commit` objects.
 The static values include:
 1. hash (string): 20 bytes hex SHA1.
 2. prefix (string): The first 1 byte of the hash.
 3. suffix (string): The last 19 bytes of the hash.
-4. objectLoc (string): The location of the object file.
-5. dividedDecryptedBuffer (Buffer []): The buffer array from buffer divided by `\u0000`.
-6. header (string): The header, contains type and size.
-7. size (number): The size of the file by bytes.
-8. data (undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData): Initialize as undefined, after running `differentiating` it can be `GitBlobObjectData`, `GitTreeObjectData` and `GitCommitObjectData`. **This might take too much memory, need to be optimized, like print to a file.**
+4. body (Buffer): The body of the object, keep deflated.
+5. type (GitObjectType): the type of the object from the `header`.
+6. size (number): The size of the file by bytes from the `header`.
+7. data (undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData): Initialize as undefined, after running `differentiating` it can be `GitBlobObjectData`, `GitTreeObjectData` and `GitCommitObjectData`. **This might take too much memory, need to be optimized, like print to a file.**
+The deflated value of `GitObject` is `${header}0x00${body}`:
+1. The `header` is `${type}0x20${size}`. 
+2. The `body` depends on the type.
 
-### GitBlobObjectData Interface
+### GitBlobObject & GitBlobObjectData Class
 `GitBlobObjectData` will have one field.
 1. content (string): the content of the file
 
-### GitTreeObjectData Interface
-`GitTreeObjectData` will have one field.
+### GitTreeObject & GitTreeObjectData Class
+The deflated `GitTreeObject` is like this: `{tree}0x20${size}0x00${modeNumber}0x20${fileName}0x00${20bytesHex}${modeNumber}0x20${fileName}0x00${20bytesHex}${modeNumber}0x20${fileName}0x00${20bytesHex}`, if stratify it, we will see:
+1. `{tree}0x20${size}` header.
+2. `0x00` delimiter.
+3. `${modeNumber}0x20${fileName}0x00${20bytesHex}`: first entry of the body.
+4. `${modeNumber}0x20${fileName}0x00${20bytesHex}`: second entry of the body.
+5. ...
+
+
+`GitTreeObjectData` class will inflate the body and return `fileEntries`.
 1. fileEntries (GitTreeObjectFileEntry[]): `fileEntries` records all entries under the tree object.
 
-### GitCommitObjectData Interface
+### GitCommitObject & GitCommitObjectData Class
 There are couple fields.
 1. treeHash (string): 20 bytes SHA1 hash of the root tree
 2. parentHashes (string[]): parent commits hash

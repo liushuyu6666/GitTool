@@ -162,5 +162,5 @@ Transfer the string to `enum` type.
 
 ## TODO:
 GitObject will be modified to meet the requirement for describing object info briefly. It needs to record the file path and offset index of the body data, (this structure can be compatible in both original object and pack object).
-We need another GitOriginalObjectOpener to create gitObject for original objects.
+We need another GitOriginalObjectOpener to create gitObject for original objects. The input should be the path of the original object, and then it creates the GitObject.
 We need PackFilePair (pack and idx) to create gitObject for pack objects.

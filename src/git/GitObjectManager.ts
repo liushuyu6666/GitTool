@@ -6,7 +6,7 @@ export interface GitObjectBrief {
   type: GitObjectType;
 
   size: number;
-}
+} // TODO: there is no GitObjectBrief anymore. The old GitObject will replace it.
 
 export interface GitObjectManagerInterface {
   objectBriefs: GitObjectBrief[]; // need to initialize at beginning.

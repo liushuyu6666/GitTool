@@ -13,4 +13,8 @@ export class Git implements GitInterface {
 
   gitObjectManager: GitObjectManager;
 
+  constructor(rootDir: string) {
+    this.gitFileManager = new GitFile(rootDir);
+  }
+
 }

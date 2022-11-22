@@ -1,11 +1,8 @@
-import path from 'path';
 import { GitBlobObjectData } from './GitBlobObjectData';
 import { GitTreeObjectData } from './GitTreeObjectData';
 import { inflateSync } from 'zlib';
 import fs from 'fs';
-import getGitObjectType from '../utils/getGitObjectType';
 import { GitCommitObjectData } from './GitCommitObjectData';
-import splitHeaderAndBody from '../utils/splitHeaderAndBody';
 
 export enum GitObjectType {
   BLOB = 'blob',
@@ -22,10 +19,6 @@ export enum Mode {
 interface GitObjectInterface {
   hash: string;
 
-  prefix: string;
-
-  suffix: string;
-
   type: GitObjectType;
 
   size: number;
@@ -35,7 +28,22 @@ interface GitObjectInterface {
   differentiating(): void;
 }
 
+export interface GitObjectInput {
+  hash: string;
+
+  type: GitObjectType;
+
+  size: number;
+
+  filePath: string;
+
+  bodyOffsetStartIndex: number;
+
+  bodyOffsetEndIndex: number;
+}
+
 export class GitObject implements GitObjectInterface {
+
   hash: string;
 
   prefix: string;
@@ -46,57 +54,53 @@ export class GitObject implements GitObjectInterface {
 
   size: number;
 
-  body: Buffer;
+  filePath: string;
+
+  bodyOffsetStartIndex: number;
+
+  bodyOffsetEndIndex: number;
 
   data: undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData;
 
-  constructor(rootDir: string, hash: string) {
-    this.hash = hash;
+  constructor({hash, type, size, filePath, bodyOffsetStartIndex, bodyOffsetEndIndex}: GitObjectInput) {
+    this.hash = hash ?? '';
 
-    this.prefix = hash.slice(0, 2);
+    this.prefix = this.hash.slice(0, 2);
 
-    this.suffix = hash.slice(2, hash.length);
+    this.suffix = this.hash.slice(2, this.hash.length);
 
-    const objectLoc = path.join(
-      rootDir,
-      '.git',
-      'objects',
-      this.prefix,
-      this.suffix,
-    );
+    this.type = type;
 
-    const decryptedBuf = inflateSync(fs.readFileSync(objectLoc));
+    this.size = size;
 
-    const [header, body] = splitHeaderAndBody(decryptedBuf);
+    this.filePath = filePath;
 
-    const headerStr = header.toString();
+    this.bodyOffsetStartIndex = bodyOffsetStartIndex;
 
-    this.body = body;
-
-    this.size = parseInt(headerStr.split(' ')[1]);
-
-    this.type = getGitObjectType(headerStr.split(' ')[0])
+    this.bodyOffsetEndIndex = bodyOffsetEndIndex;
 
     this.data = undefined;
   }
 
   differentiating() {
     const type = this.type;
+    const decryptedBuf = inflateSync(fs.readFileSync(this.filePath));
+    const body = decryptedBuf.subarray(this.bodyOffsetStartIndex, this.bodyOffsetEndIndex);
     switch (type) {
       case GitObjectType.BLOB:
-        this.data = new GitBlobObjectData(this.body);
+        this.data = new GitBlobObjectData(body);
         break;
       case GitObjectType.TREE:
         this.data = new GitTreeObjectData(
-          this.body,
+          body,
           this.hash,
         );
         break;
       case GitObjectType.COMMIT:
-        this.data = new GitCommitObjectData(this.body);
+        this.data = new GitCommitObjectData(body);
         break;
       default:
-        throw new Error(`${this.hash} can\'t be differentiated the GitObject.`);
+        throw new Error(`${this.hash} can\'t be differentiated in the GitObject.`);
     }
   }
 }

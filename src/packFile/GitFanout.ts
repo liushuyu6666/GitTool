@@ -1,3 +1,5 @@
+import sortObject from "../utils/sortObject";
+
 export interface Offset {
   hex: string;
   offset: number;
@@ -87,14 +89,17 @@ export class GitFanout implements GitFanoutInterface {
   // layer 4: [startBytes, startBytes + 4 * entrySize)
   parseLayer4(content: Buffer, startBytes: number, entrySize: number, layer2: string[]): [Record<string, number>, number] {
     const endBytes = startBytes + 4 * entrySize;
-    const offsets: Record<string, number> = {};
+    const offsetsTemp: Record<string, number> = {};
     for (let i = 0; i < layer2.length; i++) {
       const temp = content.subarray(
         startBytes + 4 * i,
         startBytes + 4 * (i + 1),
       );
-      offsets[layer2[i]] = temp.readUInt32BE();
+      offsetsTemp[layer2[i]] = temp.readUInt32BE();
     }
+
+    // sort offsets
+    const offsets = sortObject(offsetsTemp);
 
     return [offsets, endBytes];
   }

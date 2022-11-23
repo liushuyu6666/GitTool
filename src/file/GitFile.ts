@@ -10,7 +10,7 @@ export interface GitFileInterface {
 
   originalGitObjectsPaths: string[];
 
-  packPaths: string[];
+  packPathsWithoutExtension: string[];
 
   infoPaths: string[];
 
@@ -26,7 +26,7 @@ export class GitFile implements GitFileInterface {
 
   originalGitObjectsPaths: string[];
 
-  packPaths: string[];
+  packPathsWithoutExtension: string[];
 
   infoPaths: string[];
 
@@ -37,7 +37,7 @@ export class GitFile implements GitFileInterface {
     this.gitDir = path.join(this.rootDir, '.git');
     this.objectsDir = path.join(this.gitDir, 'objects');
     this.originalGitObjectsPaths = this.listAllOriginalGitObjects();
-    this.packPaths = this.listAllPacks();
+    this.packPathsWithoutExtension = this.listAllPacks();
     this.infoPaths = this.listAllInfos();
     this.allObjectPaths = this.listAllSubordinatesUnderObjects()
   }
@@ -47,7 +47,16 @@ export class GitFile implements GitFileInterface {
   }
 
   listAllPacks(): string[] {
-    return listAllSubordinatesDFS(this.objectsDir, [], [/^info$/, /^[0-9a-z]{2}$/]);
+    const files = listAllSubordinatesDFS(this.objectsDir, [], [/^info$/, /^[0-9a-z]{2}$/]);
+
+    const noExtension = files.map((file) => {
+      const lastIndex = file.lastIndexOf('.');
+      return file.substring(0, lastIndex);
+    });
+
+    const set = new Set(noExtension);
+
+    return Array.from(set.values());
   }
 
   listAllInfos(): string[] {

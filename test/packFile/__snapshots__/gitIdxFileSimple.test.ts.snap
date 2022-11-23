@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test GitIdx Class test layer1 of fanout table: layer1 1`] = `
+exports[`Test GitIdxFile Class on gitTestSimple kit, where we only have blob, tree and commit. test layer1 of fanout table: layer1 1`] = `
 {
   "0": 0,
   "1": 0,
@@ -261,7 +261,7 @@ exports[`Test GitIdx Class test layer1 of fanout table: layer1 1`] = `
 }
 `;
 
-exports[`Test GitIdx Class test offsets of fanout table: offsets 1`] = `
+exports[`Test GitIdxFile Class on gitTestSimple kit, where we only have blob, tree and commit. test offsets of fanout table: offsets 1`] = `
 {
   "3b18e512dba79e4c8300dd08aeb37f8e728b8dad": 138,
   "c17358365df785db682260407606051b011eee88": 12,

@@ -105,7 +105,7 @@ export class GitPackFile implements GitPackInterfaceFile {
       const startIndex = offsetArray[i].offset;
       const endIndex = offsetArray[i + 1].offset;
       const hex = offsetArray[i].hex;
-      const entry = new GitObjectEntry(content.subarray(startIndex, endIndex));
+      const entry = new GitObjectEntry(content, startIndex, endIndex);
       gitPackObjectEntry[hex] = entry;
     }
     return gitPackObjectEntry;

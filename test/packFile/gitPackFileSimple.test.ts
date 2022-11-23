@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { inflateSync } from 'zlib';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
@@ -10,6 +11,8 @@ describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, 
 
   const gitIdx = new GitIdxFile(idxFilePath);
   const gitPack = new GitPackFile(filePath, gitIdx.fanout.offsets);
+
+  const content = readFileSync(filePath);
 
   test('test layer1, should be PACK', () => {
     expect(gitPack.layer1).toBe('PACK');
@@ -25,11 +28,11 @@ describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, 
     const layer4 = gitPack.layer4;
     const blob = layer4['3b18e512dba79e4c8300dd08aeb37f8e728b8dad'];
 
-    const decipher = inflateSync(blob.content).toString();
+    const decipher = inflateSync(content.subarray(blob.bodyStartIndex, blob.bodyEndIndex)).toString();
     const real = 'hello world\n'; // Rememeber and the end of file there is a LF
     
     expect(decipher).toEqual(real);
-    expect(blob.variableLengthInteger).toBe(real.length);
+    expect(blob.size).toBe(real.length);
     expect(blob.type).toBe(3);
   });
 
@@ -37,7 +40,7 @@ describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, 
     const layer4 = gitPack.layer4;
     const tree = layer4['c3b8bb102afeca86037d5b5dd89ceeb0090eae9d'];
 
-    const decipher = inflateSync(tree.content);
+    const decipher = inflateSync(content.subarray(tree.bodyStartIndex, tree.bodyEndIndex));
     const {
       mode,
       pointer,
@@ -47,7 +50,7 @@ describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, 
     const real = '100644 3b18e512dba79e4c8300dd08aeb37f8e728b8dad test.txt';
     
     expect(`${mode} ${hash} ${pointer}`).toEqual(real);
-    expect(tree.variableLengthInteger).toBe(mode.length + (hash.length / 2) + pointer.length + 2);
+    expect(tree.size).toBe(mode.length + (hash.length / 2) + pointer.length + 2);
     expect(tree.type).toBe(2);
   });
 });

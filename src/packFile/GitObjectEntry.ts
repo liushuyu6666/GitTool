@@ -1,34 +1,42 @@
+import { GitObjectType } from "../gitObject/GitObject";
 import { ManipulateBuffer } from "../manipulateBuffer/ManipulateBuffer";
+import getGitObjectType from "../utils/getGitObjectType";
 
 export interface GitObjectEntryInterface {
-  type: number;
+  type: GitObjectType;
 
-  variableLengthInteger: number;
+  size: number;
 
-  content: Buffer;
+  bodyStartIndex: number;
 
-  getAndParseVariableLengthInteger(chunk: Buffer): [number, number];
+  bodyEndIndex: number;
+
+  getSize(chunk: Buffer): [number, number];
 }
 
 export class GitObjectEntry implements GitObjectEntryInterface {
-  
-  type: number;
+  type: GitObjectType;
 
-  variableLengthInteger: number;
+  size: number;
 
-  content: Buffer;
+  bodyStartIndex: number;
 
-  constructor(chunk: Buffer) {
-    this.type = (chunk[0] & 0b01110000) >> 4 & 0b00000111;
+  bodyEndIndex: number;
 
-    let contentStartIndex = 0;
+  constructor(content: Buffer, startIndex: number, endIndex: number) {
+    const chunk = content.subarray(startIndex, endIndex);
 
-    [this.variableLengthInteger, contentStartIndex] = this.getAndParseVariableLengthInteger(chunk);
+    const typeNumber = (chunk[0] & 0b01110000) >> 4 & 0b00000111;
 
-    this.content = chunk.subarray(contentStartIndex);
+    this.type = getGitObjectType(typeNumber);
+
+    [this.size, this.bodyStartIndex] = this.getSize(chunk);
+
+    this.bodyEndIndex = endIndex;
   }
 
-  getAndParseVariableLengthInteger(chunk: Buffer): [number, number] {
+  // TODO: ManipulateBuffer should be recycled.
+  getSize(chunk: Buffer): [number, number] {
     const manipulateBuffer = new ManipulateBuffer(false);
     let msb: boolean = chunk[0] > 0b10000000;
     let index = 1;

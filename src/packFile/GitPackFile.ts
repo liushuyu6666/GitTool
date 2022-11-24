@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import convertRecordToArray from '../utils/convertRecordToArray';
 import { Offset } from './GitFanout';
 import { GitObjectEntry } from './GitObjectEntry';
 
@@ -84,13 +85,14 @@ export class GitPackFile implements GitPackInterfaceFile {
 
   parseLayer4(offsets: Record<string, number>, content: Buffer): Record<string, GitObjectEntry> {
     // create offsetArray
-    const offsetArray: Offset[] = [];
-    Object.entries(offsets).forEach(([hex, offset]) => {
-      offsetArray.push({
-        hex,
-        offset
-      })
-    })
+    // const offsetArray: Offset[] = [];
+    // Object.entries(offsets).forEach(([hex, offset]) => {
+    //   offsetArray.push({
+    //     hex,
+    //     offset
+    //   })
+    // })
+    const offsetArray: Offset[] = convertRecordToArray(offsets, 'hex', 'offset') as Offset[];
 
     // sort offsetArray ascending
     // offsetArray.length = offsets.length + 1

@@ -103,6 +103,26 @@ This kit contains couple simple files for unit test.
 
 
 
+# gitTest test kit
+This kit contains real git for unit test.
+
+## pack object
+### OBJ_REF_DELTA
+hash: `49853f52f49c4edbb53c63f2492c6ece14e308da`
+
+content:
+```
+040000 tree a1722cf672d5283ceee24e20e6bf2a7ecbe4bc9a	graphql
+040000 tree 0181ecd75354b4824fff7f432b320a2e2c73b787	hubspot
+040000 tree a10212ebee6ee96905a1f7804251a0d0409ee43e	mongodb
+100644 blob 546ad2daf3eaac1c1f1f4417ae41492e56c79075	payment.test.ts
+100644 blob 14cb881f222bbd01c094f775c66d3eb41933cfe8	payment.ts
+100644 blob c35f424c0c286d42ff41b2f28475420a3cceee29	professionInfo.ts
+040000 tree 0303e1b8546fa779e4573acfed6d9ad0f700c4e9	user
+```
+
+
+
 # GitObject kit
 ## GitObject Class and Interface
 `GitObject` class works for three objects - `blob`, `tree` and `commit`. When creating a new `GitObject` class, the common static values will be populated first, but the `data` field will be undefined. At this point the type of the object is known. The `differentiating` method will inflate the body of the object and populate the `data` according to the type of the object.

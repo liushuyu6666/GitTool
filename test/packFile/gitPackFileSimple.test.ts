@@ -1,13 +1,16 @@
+import * as dotenv from 'dotenv';
 import { readFileSync } from 'fs';
 import { inflateSync } from 'zlib';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 import { GitPackFile } from '../../src/packFile/GitPackFile';
 import { parseTreeEntry } from '../../src/utils/gitObjectParse/tree';
 
+dotenv.config({ path: '.env.localhost.local' });
+dotenv.config({ path: '.env.local' });
+
 describe('Test GitPackFile Class on gitTestSimple kit, where we only have blob, tree and commit.', () => {
-  const filePath =
-    'gitTestSimple/.git/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.pack';
-  const idxFilePath = 'gitTestSimple/.git/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
+  const filePath = process.env.packPathtest ?? '';
+  const idxFilePath = process.env.idxPathTest ?? '';
 
   const gitIdx = new GitIdxFile(idxFilePath);
   const gitPack = new GitPackFile(filePath, gitIdx.fanout.offsets);

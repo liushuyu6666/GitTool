@@ -1,8 +1,12 @@
 import { GitFile } from "../../src/file/GitFile";
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.localhost.local' });
+dotenv.config({ path: '.env.local' });
 
 describe("Test gitFile", () => {
-  const rootDir = './gitTest';
-  const gitFile = new GitFile(rootDir);
+  const rootDirTest = process.env.rootDirTest ?? '';
+  const gitFile = new GitFile(rootDirTest);
 
   test("test the list functions to see if the sum is right", () => {
     const originalObjectNumber = gitFile.originalGitObjectsPaths.length;

@@ -1,8 +1,11 @@
+import * as dotenv from 'dotenv';
 import { GitIdxFile } from '../../src/packFile/GitIdxFile';
 
+dotenv.config({ path: '.env.localhost.local' });
+dotenv.config({ path: '.env.local' });
+
 describe('Test GitIdxFile Class on gitTestSimple kit, where we only have blob, tree and commit.', () => {
-  const filePath =
-    './gitTestSimple/.git/objects/pack/pack-5fec731b51ec842da6351423114d4bbee41e7aee.idx';
+  const filePath = process.env.idxPathTest ?? '';
   const gitIdx = new GitIdxFile(filePath);
 
   test('test header, should be [255, 116, 79, 99]', () => {

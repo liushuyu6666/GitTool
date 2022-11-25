@@ -1,6 +1,10 @@
+import * as dotenv from 'dotenv';
 import { GitObject } from "../../src/gitObject/GitObject";
 import { GitOriginalObjectGenerator } from "../../src/gitObject/GitOriginalObjectGenerator";
 import { GitObjectType } from "../../src/utils/getGitObjectType";
+
+dotenv.config({ path: '.env.localhost.local' });
+dotenv.config({ path: '.env.local' });
 
 describe('Test GitObject class', () => {
   let gitBlobObject: GitObject;
@@ -8,7 +12,7 @@ describe('Test GitObject class', () => {
   let gitCommitObject: GitObject;
 
   describe('test a blob object, details can be found on readme.md', () => {
-    const path = './gitTestSimple/.git/objects/21/29cac3bcef43797f755ba6105c32d4a3f1ace0';
+    const path = process.env.blobPathTest ?? '';
     gitBlobObject = new GitOriginalObjectGenerator(path).generateGitOriginalObject();
 
     test('test the hash, prefix, suffix, type, size, filePath, startIndex and endIndex', () => {
@@ -34,7 +38,7 @@ describe('Test GitObject class', () => {
   })
 
   describe('test a tree object, details can be found on readme.md', () => {
-    const path = './gitTestSimple/.git/objects/a5/e8ef5f17e278727d3f18a309cba4be8f6ba2c8';
+    const path = process.env.treePathTest ?? '';
     gitTreeObject = new GitOriginalObjectGenerator(path).generateGitOriginalObject();
 
     test('test the hash, prefix, suffix, type, size, filePath, startIndex and endIndex', () => {
@@ -71,7 +75,7 @@ describe('Test GitObject class', () => {
   })
 
   describe('test a commit object, details can be found on readme.md', () => {
-    const path = './gitTestSimple/.git/objects/7c/556ca93b467f8f8247acf522915f2f9e048eb5';
+    const path = process.env.commitPathTest ?? '';
     gitCommitObject = new GitOriginalObjectGenerator(path).generateGitOriginalObject();
 
     test('test the hash, prefix, suffix, type, size, filePath, startIndex and endIndex', () => {

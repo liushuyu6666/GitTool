@@ -1,6 +1,7 @@
-import { GitObject } from "../gitObject/GitObject";
-import { GitIdxFile } from "./GitIdxFile";
-import { GitPackFile } from "./GitPackFile";
+import { GitObject } from '../gitObject/GitObject';
+import { isDeltaObject, isOriginalObject } from '../utils/getGitObjectType';
+import { GitIdxFile } from './GitIdxFile';
+import { GitPackFile } from './GitPackFile';
 
 export interface GitPackPairInterface {
   pack: GitPackFile;
@@ -8,7 +9,7 @@ export interface GitPackPairInterface {
   idx: GitIdxFile;
 }
 
-export class GitPackPair implements GitPackPairInterface{
+export class GitPackPair implements GitPackPairInterface {
   pack: GitPackFile;
 
   idx: GitIdxFile;
@@ -28,21 +29,45 @@ export class GitPackPair implements GitPackPairInterface{
     const gitObjects: GitObject[] = [];
 
     for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
-      const object = new GitObject({
-        hash,
-        type: gitObjectEntry.type,
-        size: gitObjectEntry.size,
-        filePath: this.filePathPack,
-        bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
-        bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
-      })
-      gitObjects.push(object);
+      const type = gitObjectEntry.type;
+
+      if (isOriginalObject(type)) {
+        gitObjects.push(
+          new GitObject({
+            hash,
+            type,
+            size: gitObjectEntry.size,
+            filePath: this.filePathPack,
+            bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
+            bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
+          }),
+        );
+      }
     }
 
     return gitObjects;
   }
 
-  generateDeltaChain() {
-    return;
+  generateGitDeltaObject(): GitObject[] {
+    const gitObjects: GitObject[] = [];
+
+    for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
+      const type = gitObjectEntry.type;
+
+      if (isDeltaObject(type)) {
+        gitObjects.push(
+          new GitObject({
+            hash,
+            type,
+            size: gitObjectEntry.size,
+            filePath: this.filePathPack,
+            bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
+            bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
+          }),
+        );
+      }
+    }
+
+    return gitObjects;
   }
 }

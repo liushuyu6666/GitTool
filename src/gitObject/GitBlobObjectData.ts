@@ -1,5 +1,5 @@
+import { GitObjectType } from '../utils/getGitObjectType';
 import { parseBlobObjectContent } from '../utils/gitObjectParse/blob';
-import { GitObjectType } from './GitObject';
 
 export interface GitBlobObjectInterface {
   type: GitObjectType.BLOB;

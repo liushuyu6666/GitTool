@@ -1,8 +1,8 @@
+import { GitObjectType } from '../utils/getGitObjectType';
 import {
   GitTreeObjectFileEntry,
   parseTreeObjectContent,
 } from '../utils/gitObjectParse/tree';
-import { GitObjectType } from './GitObject';
 
 export interface GitTreeObjectInterface {
   type: GitObjectType.TREE;

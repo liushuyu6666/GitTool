@@ -3,16 +3,7 @@ import { GitTreeObjectData } from './GitTreeObjectData';
 import { inflateSync } from 'zlib';
 import fs from 'fs';
 import { GitCommitObjectData } from './GitCommitObjectData';
-
-export enum GitObjectType {
-  BLOB = 'blob',
-  TREE = 'tree',
-  COMMIT = 'commit',
-  TAG = 'tag',
-  OFS_DELTA = 'ofs_delta',
-  REF_DELTA = 'ref_delta',
-  UNDEFINED = 'undefined',
-}
+import { GitObjectType } from '../utils/getGitObjectType';
 
 export enum Mode {
   normal = '100644',

@@ -1,5 +1,6 @@
-import { GitObject, GitObjectType } from "../../src/gitObject/GitObject";
+import { GitObject } from "../../src/gitObject/GitObject";
 import { GitOriginalObjectGenerator } from "../../src/gitObject/GitOriginalObjectGenerator";
+import { GitObjectType } from "../../src/utils/getGitObjectType";
 
 describe('Test GitObject class', () => {
   let gitBlobObject: GitObject;

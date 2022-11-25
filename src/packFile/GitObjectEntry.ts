@@ -1,6 +1,5 @@
-import { GitObjectType } from "../gitObject/GitObject";
 import { ManipulateBuffer } from "../manipulateBuffer/ManipulateBuffer";
-import getGitObjectType from "../utils/getGitObjectType";
+import getGitObjectType, { GitObjectType } from "../utils/getGitObjectType";
 
 export interface GitObjectEntryInterface {
   type: GitObjectType;

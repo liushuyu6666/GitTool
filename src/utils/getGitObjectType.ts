@@ -1,4 +1,12 @@
-import { GitObjectType } from "../gitObject/GitObject";
+export enum GitObjectType {
+  BLOB = 'blob',
+  TREE = 'tree',
+  COMMIT = 'commit',
+  TAG = 'tag',
+  OFS_DELTA = 'ofs_delta',
+  REF_DELTA = 'ref_delta',
+  UNDEFINED = 'undefined',
+}
 
 export const GitNumberObjectType: Record<number, GitObjectType> = {
   1: GitObjectType.COMMIT,
@@ -32,4 +40,16 @@ export default function (type: string | number): GitObjectType {
   } else {
     throw new Error(`getGitObjectType error!`);
   }
+}
+
+const originalType: Array<GitObjectType> = [GitObjectType.BLOB, GitObjectType.TREE, GitObjectType.COMMIT, GitObjectType.TAG];
+
+const deltaType: Array<GitObjectType> = [GitObjectType.OFS_DELTA, GitObjectType.REF_DELTA];
+
+export function isOriginalObject(type: GitObjectType): boolean {
+  return originalType.includes(type);
+}
+
+export function isDeltaObject(type: GitObjectType): boolean {
+  return deltaType.includes(type);
 }

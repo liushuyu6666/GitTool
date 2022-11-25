@@ -1,5 +1,5 @@
+import { GitObjectType } from '../utils/getGitObjectType';
 import { CommitObjectInfo, parseCommitObjectContent } from '../utils/gitObjectParse/commit';
-import { GitObjectType } from './GitObject';
 
 export interface GitCommitObjectInterface {
   type: GitObjectType.COMMIT;

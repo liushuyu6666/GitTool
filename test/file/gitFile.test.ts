@@ -6,7 +6,7 @@ describe("Test gitFile", () => {
 
   test("test the list functions to see if the sum is right", () => {
     const originalObjectNumber = gitFile.originalGitObjectsPaths.length;
-    const packNumber = gitFile.packPaths.length;
+    const packNumber = gitFile.packPathsWithoutExtension.length;
     const infoNumber = gitFile.infoPaths.length;
     const allObjectNumber = gitFile.allObjectPaths.length;
 

@@ -41,4 +41,8 @@ export class GitPackPair implements GitPackPairInterface{
 
     return gitObjects;
   }
+
+  generateDeltaChain() {
+    return;
+  }
 }

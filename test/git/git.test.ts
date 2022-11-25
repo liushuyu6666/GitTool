@@ -1,4 +1,5 @@
 import { Git } from "../../src/git/Git";
+import { GitObjectType } from "../../src/gitObject/GitObject";
 
 describe('Test Git using gitTestSimple', () => {
   const rootDir = './gitTest';
@@ -16,7 +17,9 @@ describe('Test Git using gitTestSimple', () => {
 
   describe('Test gitObjectManager', () => {
     test('all object briefs', () => {
-      console.log(git.gitObjectManager.sizeInTotal / 1000000);
+      const ref = git.gitObjectManager.objectBriefs.filter((brief) => brief.type === GitObjectType.REF_DELTA);
+
+      console.log(ref[5].hash);
     })
   })
 })

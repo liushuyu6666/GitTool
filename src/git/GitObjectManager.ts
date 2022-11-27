@@ -65,7 +65,7 @@ export class GitObjectManager implements GitObjectManagerInterface {
     this.packDeltaObjectBriefs = this.listPackDeltaObjectBriefsQuickly(
       packPathsWithoutExtension,
       objectDir,
-      false,
+      true,
     );
   }
 

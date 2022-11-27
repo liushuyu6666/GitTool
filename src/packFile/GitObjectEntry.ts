@@ -31,6 +31,8 @@ export class GitObjectEntry implements GitObjectEntryInterface {
 
     [this.size, this.bodyStartIndex] = this.getSize(chunk);
 
+    this.bodyStartIndex += startIndex;
+
     this.bodyEndIndex = endIndex;
   }
 

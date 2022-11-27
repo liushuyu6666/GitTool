@@ -1,3 +1,17 @@
+# Concepts
+## Objects
+1. `Independent Original Object`
+   All objects under the `.git/objects/` folder that start with 1 byte hex.
+2. `Pack Object`
+   All objects nested in `.git/objects/pack/` folder that belong to `OBJ_BLOB`, `OBJ_TREE`, `OBJ_COMMIT`, `OBJ_TAG`, `OBJ_OFS_DELTA` and `OBJ_REF_DELTA`.
+3. `Pack Original Object`
+   All objects nested in `.git/objects/pack/` folder that belong to `OBJ_BLOB`, `OBJ_TREE`, `OBJ_COMMIT` and `OBJ_TAG`.
+4. `Pack Delta Object`
+   All objects nested in `.git/objects/pack/` folder that belong to `OBJ_OFS_DELTA` and `OBJ_REF_DELTA`.
+5. `Original Object`
+   `Original Object` comprises `Independent Original Object` and `Pack Original Object`.
+
+
 # gitTestSimple test kit
 This kit contains couple simple files for unit test.
 

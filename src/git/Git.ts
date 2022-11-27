@@ -5,7 +5,6 @@ export interface GitInterface {
   gitFileManager: GitFile;
 
   gitObjectManager: GitObjectManager;
-
 }
 
 export class Git implements GitInterface {
@@ -13,13 +12,12 @@ export class Git implements GitInterface {
 
   gitObjectManager: GitObjectManager;
 
-  constructor(rootDir: string) {
-    this.gitFileManager = new GitFile(rootDir);
-
+  constructor(rootDir: string, outDir: string) {
+    this.gitFileManager = new GitFile(rootDir, outDir);
 
     this.gitObjectManager = new GitObjectManager({
-      originalObjectFilePaths: this.gitFileManager.originalGitObjectsPaths,
-      packPathsWithoutExtension: this.gitFileManager.packPathsWithoutExtension
+      inDirs: this.gitFileManager.inDirs,
+      outDirs: this.gitFileManager.outDirs
     });
   }
 

@@ -10,7 +10,7 @@ export enum Mode {
   tree = '040000',
 }
 
-interface GitObjectInterface {
+export interface GitObjectInterface {
   hash: string;
 
   type: GitObjectType;

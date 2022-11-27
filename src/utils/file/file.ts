@@ -36,3 +36,16 @@ export function listAllSubordinatesDFS(dir: string, filePaths: string[], filterR
 
   return filePaths;
 }
+
+export function storeDataInFile(filePath: string, data: any) {
+    
+  const json = JSON.stringify(data);
+  const lastSep = filePath.lastIndexOf(path.sep);
+  const prefix = filePath.substring(0, lastSep);
+
+  if (fs.existsSync(prefix)) {
+    fs.writeFileSync(filePath, json);
+  } else {
+    throw new Error(`[file path error]: ${path} doesn\'t exist, can store data into that`);
+  }
+}

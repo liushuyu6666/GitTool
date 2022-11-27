@@ -48,6 +48,7 @@ export class GitPackPair implements GitPackPairInterface {
     return gitObjects;
   }
 
+  // TODO: maybe we can combine generateGitDeltaObject with generateGitOriginalObject
   generateGitDeltaObject(): GitObject[] {
     const gitObjects: GitObject[] = [];
 

@@ -1,4 +1,4 @@
-import { GitObject } from '../gitObject/GitObject';
+import { GitObject, GitObjectInput } from '../gitObject/GitObject';
 import { GitOriginalObjectGenerator } from '../gitObject/GitOriginalObjectGenerator';
 import { GitPackPair } from '../packFile/GitPackPair';
 import fs from 'fs';
@@ -57,15 +57,17 @@ export class GitObjectManager implements GitObjectManagerInterface {
       objects: { independentOriginalObjectPaths, packPathsWithoutExtension },
     } = inDirs;
 
-    this.originalObjectBriefs = this.listAllOriginalObjectBriefs(
+    this.originalObjectBriefs = this.listAllOriginalObjectBriefsQuickly(
       independentOriginalObjectPaths,
       packPathsWithoutExtension,
+      objectDir,
+      false
     );
 
     this.packDeltaObjectBriefs = this.listPackDeltaObjectBriefsQuickly(
       packPathsWithoutExtension,
       objectDir,
-      true,
+      false,
     );
   }
 
@@ -82,7 +84,7 @@ export class GitObjectManager implements GitObjectManagerInterface {
   ): GitObject[] {
     let objects: GitObject[] = [];
 
-    packPathsWithoutExtension.forEach((filePath) => {
+    packPathsWithoutExtension.map((filePath) => {
       const packPair = new GitPackPair(`${filePath}.idx`, `${filePath}.pack`);
       objects = objects.concat(packPair.generateGitOriginalObject());
     });
@@ -118,10 +120,17 @@ export class GitObjectManager implements GitObjectManagerInterface {
 
     // If file exists and no need to update, just read from the file.
     if (fileExists && !updateOrNot) {
-      const deltaObjectBriefs = JSON.parse(
+      const originalObjectBriefs = JSON.parse(
         fs.readFileSync(originalObjectBriefsPath).toString(),
-      ) as unknown as GitObject[];
-      return deltaObjectBriefs;
+      ) as unknown as GitObjectInput[];
+      return originalObjectBriefs.map((brief) => new GitObject({
+        hash: brief.hash,
+        type: brief.type,
+        size: brief.size,
+        filePath: brief.filePath,
+        bodyOffsetStartIndex: brief.bodyOffsetStartIndex,
+        bodyOffsetEndIndex: brief.bodyOffsetEndIndex
+      }));
     }
 
     // Otherwise, generate a new one and save into file.
@@ -160,8 +169,15 @@ export class GitObjectManager implements GitObjectManagerInterface {
     if (fileExists && !updateOrNot) {
       const deltaObjectBriefs = JSON.parse(
         fs.readFileSync(deltaObjectBriefsPath).toString(),
-      ) as unknown as GitObject[];
-      return deltaObjectBriefs;
+      ) as unknown as GitObjectInput[];
+      return deltaObjectBriefs.map((brief) => new GitObject({
+        hash: brief.hash,
+        type: brief.type,
+        size: brief.size,
+        filePath: brief.filePath,
+        bodyOffsetStartIndex: brief.bodyOffsetStartIndex,
+        bodyOffsetEndIndex: brief.bodyOffsetEndIndex
+      }));
     }
 
     // Otherwise, generate a new one and save into file.

@@ -3,7 +3,12 @@ import { GitTreeObjectData } from './GitTreeObjectData';
 import { inflateSync } from 'zlib';
 import fs from 'fs';
 import { GitCommitObjectData } from './GitCommitObjectData';
-import { GitObjectType } from '../utils/getGitObjectType';
+import {
+  GitObjectType,
+  isDeltaObject,
+  isOriginalObject,
+} from '../utils/getGitObjectType';
+import { GitRefDeltaObjectData } from './GitRefDeltaObjectData';
 
 export enum Mode {
   normal = '100644',
@@ -17,7 +22,12 @@ export interface GitObjectInterface {
 
   size: number;
 
-  data: undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData;
+  data:
+    | undefined
+    | GitBlobObjectData
+    | GitTreeObjectData
+    | GitCommitObjectData
+    | GitRefDeltaObjectData;
 
   differentiating(): void;
 }
@@ -37,7 +47,6 @@ export interface GitObjectInput {
 }
 
 export class GitObject implements GitObjectInterface {
-
   hash: string;
 
   prefix: string;
@@ -54,9 +63,21 @@ export class GitObject implements GitObjectInterface {
 
   bodyOffsetEndIndex: number;
 
-  data: undefined | GitBlobObjectData | GitTreeObjectData | GitCommitObjectData;
+  data:
+    | undefined
+    | GitBlobObjectData
+    | GitTreeObjectData
+    | GitCommitObjectData
+    | GitRefDeltaObjectData;
 
-  constructor({hash, type, size, filePath, bodyOffsetStartIndex, bodyOffsetEndIndex}: GitObjectInput) {
+  constructor({
+    hash,
+    type,
+    size,
+    filePath,
+    bodyOffsetStartIndex,
+    bodyOffsetEndIndex,
+  }: GitObjectInput) {
     this.hash = hash ?? '';
 
     this.prefix = this.hash.slice(0, 2);
@@ -78,23 +99,41 @@ export class GitObject implements GitObjectInterface {
 
   differentiating() {
     const type = this.type;
-    const decryptedBuf = inflateSync(fs.readFileSync(this.filePath));
-    const body = decryptedBuf.subarray(this.bodyOffsetStartIndex, this.bodyOffsetEndIndex);
-    switch (type) {
-      case GitObjectType.BLOB:
-        this.data = new GitBlobObjectData(body);
-        break;
-      case GitObjectType.TREE:
-        this.data = new GitTreeObjectData(
-          body,
-          this.hash,
-        );
-        break;
-      case GitObjectType.COMMIT:
-        this.data = new GitCommitObjectData(body);
-        break;
-      default:
-        throw new Error(`${this.hash} can\'t be differentiated in the GitObject.`);
+    const content = fs.readFileSync(this.filePath);
+    if (isOriginalObject(type)) {
+      const decryptedBuf = inflateSync(content);
+      const body = decryptedBuf.subarray(
+        this.bodyOffsetStartIndex,
+        this.bodyOffsetEndIndex,
+      );
+      switch (type) {
+        case GitObjectType.BLOB:
+          this.data = new GitBlobObjectData(body);
+          break;
+        case GitObjectType.TREE:
+          this.data = new GitTreeObjectData(body, this.hash);
+          break;
+        case GitObjectType.COMMIT:
+          this.data = new GitCommitObjectData(body);
+          break;
+        default:
+          throw new Error(
+            `${this.hash} can\'t be differentiated in the GitObject.`,
+          );
+      }
+    }
+    if (isDeltaObject(type)) {
+      const body = content.subarray(
+        this.bodyOffsetStartIndex,
+        this.bodyOffsetEndIndex,
+      );
+      switch (type) {
+        case GitObjectType.BLOB_DELTA:
+          this.data = inflateSync(body);
+        case GitObjectType.REF_DELTA:
+          this.data = new GitRefDeltaObjectData(body);
+          break;
+      }
     }
   }
 }

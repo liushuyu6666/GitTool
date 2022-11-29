@@ -3,19 +3,23 @@ export enum GitObjectType {
   TREE = 'tree',
   COMMIT = 'commit',
   TAG = 'tag',
+  BLOB_DELTA = 'blob_delta',
+  TREE_DELTA = 'tree_delta',
+  COMMIT_DELTA = 'commit_delta',
+  TAG_DELTA = 'tag_delta',
   OFS_DELTA = 'ofs_delta',
   REF_DELTA = 'ref_delta',
   UNDEFINED = 'undefined',
 }
 
-export const GitNumberObjectType: Record<number, GitObjectType> = {
-  1: GitObjectType.COMMIT,
-  2: GitObjectType.TREE,
-  3: GitObjectType.BLOB,
-  4: GitObjectType.TAG,
+export const GitPackObjectType: Record<number, GitObjectType> = {
+  1: GitObjectType.COMMIT_DELTA,
+  2: GitObjectType.TREE_DELTA,
+  3: GitObjectType.BLOB_DELTA,
+  4: GitObjectType.TAG_DELTA,
   5: GitObjectType.OFS_DELTA,
   6: GitObjectType.REF_DELTA,
-}
+};
 
 export default function (type: string | number): GitObjectType {
   if (typeof type === 'string') {
@@ -36,15 +40,28 @@ export default function (type: string | number): GitObjectType {
         throw new Error(`Can\'t find the GitObjectType: ${type}`);
     }
   } else if (typeof type === 'number') {
-    return GitNumberObjectType[type];
+    // if it is number, then it should come from pack file
+    return GitPackObjectType[type];
   } else {
     throw new Error(`getGitObjectType error!`);
   }
 }
 
-const originalType: Array<GitObjectType> = [GitObjectType.BLOB, GitObjectType.TREE, GitObjectType.COMMIT, GitObjectType.TAG];
+const originalType: Array<GitObjectType> = [
+  GitObjectType.BLOB,
+  GitObjectType.TREE,
+  GitObjectType.COMMIT,
+  GitObjectType.TAG,
+];
 
-const deltaType: Array<GitObjectType> = [GitObjectType.OFS_DELTA, GitObjectType.REF_DELTA];
+const deltaType: Array<GitObjectType> = [
+  GitObjectType.BLOB_DELTA,
+  GitObjectType.TREE_DELTA,
+  GitObjectType.COMMIT_DELTA,
+  GitObjectType.TAG_DELTA,
+  GitObjectType.OFS_DELTA,
+  GitObjectType.REF_DELTA,
+];
 
 export function isOriginalObject(type: GitObjectType): boolean {
   return originalType.includes(type);

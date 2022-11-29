@@ -17,7 +17,8 @@ export interface GitFileInterface {
 
   createInDir(rootDir: string): GitInDir;
 
-  createOutDir(outDir: string): GitOutDir;
+  createOutDir(rootDir: string): GitOutDir;
+
 }
 
 export interface GitInDir {

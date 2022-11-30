@@ -127,9 +127,17 @@ export class GitObject implements GitObjectInterface {
         this.bodyOffsetStartIndex,
         this.bodyOffsetEndIndex,
       );
+      const decryptedBuf = inflateSync(body);
       switch (type) {
         case GitObjectType.BLOB_DELTA:
-          this.data = inflateSync(body);
+          this.data = new GitBlobObjectData(decryptedBuf);
+          break;
+        case GitObjectType.TREE_DELTA:
+          this.data = new GitTreeObjectData(decryptedBuf, this.hash);
+          break;
+        case GitObjectType.COMMIT_DELTA:
+          this.data = new GitCommitObjectData(decryptedBuf);
+          break;
         case GitObjectType.REF_DELTA:
           this.data = new GitRefDeltaObjectData(body);
           break;

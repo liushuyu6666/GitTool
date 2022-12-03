@@ -1,5 +1,5 @@
 import { GitObject } from '../gitObject/GitObject';
-import { isDeltaObject, isOriginalObject } from '../utils/getGitObjectType';
+import { isDeltaObject, isOriginalDeltaObject } from '../utils/getGitObjectType';
 import { GitIdxFile } from './GitIdxFile';
 import { GitPackFile } from './GitPackFile';
 
@@ -31,7 +31,7 @@ export class GitPackPair implements GitPackPairInterface {
     for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
       const type = gitObjectEntry.type;
 
-      if (isOriginalObject(type)) {
+      if (isOriginalDeltaObject(type)) {
         gitObjects.push(
           new GitObject({
             hash,

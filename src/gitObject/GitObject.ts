@@ -6,6 +6,7 @@ import { GitCommitObjectData } from './GitCommitObjectData';
 import {
   GitObjectType,
   isDeltaObject,
+  isOriginalDeltaObject,
   isOriginalObject,
 } from '../utils/getGitObjectType';
 import { GitRefDeltaObjectData } from './GitRefDeltaObjectData';
@@ -100,6 +101,7 @@ export class GitObject implements GitObjectInterface {
   differentiating() {
     const type = this.type;
     const content = fs.readFileSync(this.filePath);
+
     if (isOriginalObject(type)) {
       const decryptedBuf = inflateSync(content);
       const body = decryptedBuf.subarray(
@@ -121,8 +123,7 @@ export class GitObject implements GitObjectInterface {
             `${this.hash} can\'t be differentiated in the GitObject.`,
           );
       }
-    }
-    if (isDeltaObject(type)) {
+    } else if (isOriginalDeltaObject(type)) {
       const body = content.subarray(
         this.bodyOffsetStartIndex,
         this.bodyOffsetEndIndex,
@@ -138,6 +139,18 @@ export class GitObject implements GitObjectInterface {
         case GitObjectType.COMMIT_DELTA:
           this.data = new GitCommitObjectData(decryptedBuf);
           break;
+        default:
+          throw new Error(
+            `${this.hash} can\'t be differentiated in the GitObject.`,
+          );
+      }
+    } else if (isDeltaObject(type)) {
+      const body = content.subarray(
+        this.bodyOffsetStartIndex,
+        this.bodyOffsetEndIndex,
+      );
+      console.log(body.toString('hex'));
+      switch (type) {
         case GitObjectType.REF_DELTA:
           this.data = new GitRefDeltaObjectData(body);
           break;

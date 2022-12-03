@@ -54,17 +54,24 @@ const originalType: Array<GitObjectType> = [
   GitObjectType.TAG,
 ];
 
-const deltaType: Array<GitObjectType> = [
+const originalDeltaType: Array<GitObjectType> = [
   GitObjectType.BLOB_DELTA,
   GitObjectType.TREE_DELTA,
   GitObjectType.COMMIT_DELTA,
   GitObjectType.TAG_DELTA,
+]
+
+const deltaType: Array<GitObjectType> = [
   GitObjectType.OFS_DELTA,
   GitObjectType.REF_DELTA,
 ];
 
 export function isOriginalObject(type: GitObjectType): boolean {
   return originalType.includes(type);
+}
+
+export function isOriginalDeltaObject(type: GitObjectType): boolean {
+  return originalDeltaType.includes(type);
 }
 
 export function isDeltaObject(type: GitObjectType): boolean {

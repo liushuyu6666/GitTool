@@ -12,6 +12,7 @@ export class Git implements GitInterface {
 
   gitObjectManager: GitObjectManager;
 
+  // TODO: updateOrNot should combine with outDir to see which we need to update
   constructor(rootDir: string, outDir: string) {
     this.gitFileManager = new GitFile(rootDir, outDir);
 

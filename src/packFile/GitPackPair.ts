@@ -23,10 +23,10 @@ export class GitPackPair implements GitPackPairInterface {
 
   filePathPack: string;
 
-  constructor(filePathIdx: string, filePathPack: string) {
+  constructor(filePathIdx: string, filePathPack: string, outPackPath: string) {
     this.filePathIdx = filePathIdx;
     this.filePathPack = filePathPack;
-    this.idx = new GitIdxFile(filePathIdx);
+    this.idx = new GitIdxFile(filePathIdx, outPackPath);
     this.pack = new GitPackFile(filePathPack, this.idx.fanout.offsets);
   }
 

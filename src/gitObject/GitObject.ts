@@ -5,9 +5,9 @@ import fs from 'fs';
 import { GitCommitObjectData } from './GitCommitObjectData';
 import {
   GitObjectType,
-  isDeltaObject,
-  isOriginalDeltaObject,
   isOriginalObject,
+  isPackDeltaObject,
+  isPackOriginalObject,
 } from '../utils/getGitObjectType';
 import { GitRefDeltaObjectData } from './GitRefDeltaObjectData';
 
@@ -123,7 +123,7 @@ export class GitObject implements GitObjectInterface {
             `${this.hash} can\'t be differentiated in the GitObject.`,
           );
       }
-    } else if (isOriginalDeltaObject(type)) {
+    } else if (isPackOriginalObject(type)) {
       const body = content.subarray(
         this.bodyOffsetStartIndex,
         this.bodyOffsetEndIndex,
@@ -144,7 +144,7 @@ export class GitObject implements GitObjectInterface {
             `${this.hash} can\'t be differentiated in the GitObject.`,
           );
       }
-    } else if (isDeltaObject(type)) {
+    } else if (isPackDeltaObject(type)) {
       const body = content.subarray(
         this.bodyOffsetStartIndex,
         this.bodyOffsetEndIndex,

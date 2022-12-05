@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import path from 'path';
 import { GitFanout } from './GitFanout';
 
 export interface GitIdxFileInterface {
@@ -26,12 +27,14 @@ export class GitIdxFile implements GitIdxFileInterface {
 
   fanout: GitFanout;
 
-  constructor(filePath: string) {
+  constructor(filePath: string, outDir: string) {
+    const fileName = filePath.substring(filePath.lastIndexOf(path.sep));
+    const outFile = path.join(outDir, fileName);
     const content = readFileSync(filePath);
     this.byteSize = content.length;
     this.header = this.parseHeader(content);
     this.versionNumber = this.parseVersionNumber(content);
-    this.fanout = new GitFanout(content);
+    this.fanout = new GitFanout(content, outFile);
   }
 
   parseHeader(content: Buffer): [number, number, number, number] {

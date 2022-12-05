@@ -46,6 +46,6 @@ export function storeDataInFile(filePath: string, data: any) {
   if (fs.existsSync(prefix)) {
     fs.writeFileSync(filePath, json);
   } else {
-    throw new Error(`[file path error]: ${path} doesn\'t exist, can store data into that`);
+    throw new Error(`[file path error]: ${path} doesn\'t exist, cannot store data into that`);
   }
 }

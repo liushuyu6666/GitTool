@@ -1,3 +1,4 @@
+import { storeDataInFile } from "../utils/file/file";
 import sortObject from "../utils/sortObject";
 
 export interface Offset {
@@ -22,7 +23,7 @@ export interface GitFanoutInterface {
 
   parseLayer3(content: Buffer, startBytes: number, entrySize: number): [Buffer, number];
 
-  parseLayer4(content: Buffer, startBytes: number, entrySize: number, layer2: string[]): [Record<string, number>, number];
+  parseLayer4(content: Buffer, startBytes: number, entrySize: number, layer2: string[], outFile: string): [Record<string, number>, number];
 }
 
 export class GitFanout implements GitFanoutInterface {
@@ -36,13 +37,13 @@ export class GitFanout implements GitFanoutInterface {
 
   offsets: Record<string, number>;
 
-  constructor(idxContent: Buffer) {
+  constructor(idxContent: Buffer, outFile: string) {
     const content = idxContent.subarray(8, idxContent.length - 20);
     let startBytes: number = 0;
     [this.layer1, this.entrySize, startBytes] = this.parseLayer1(content);
     [this.layer2, startBytes] = this.parseLayer2(content, startBytes, this.entrySize);
     [this.layer3, startBytes] = this.parseLayer3(content, startBytes, this.entrySize);
-    [this.offsets, startBytes] = this.parseLayer4(content, startBytes, this.entrySize, this.layer2);
+    [this.offsets, startBytes] = this.parseLayer4(content, startBytes, this.entrySize, this.layer2, outFile);
   }
 
   // layer 1: [0, 1024), 256 entries, each has 4 bytes.
@@ -87,7 +88,7 @@ export class GitFanout implements GitFanoutInterface {
   }
 
   // layer 4: [startBytes, startBytes + 4 * entrySize)
-  parseLayer4(content: Buffer, startBytes: number, entrySize: number, layer2: string[]): [Record<string, number>, number] {
+  parseLayer4(content: Buffer, startBytes: number, entrySize: number, layer2: string[], outFile: string): [Record<string, number>, number] {
     const endBytes = startBytes + 4 * entrySize;
     const offsetsTemp: Record<string, number> = {};
     for (let i = 0; i < layer2.length; i++) {
@@ -100,6 +101,10 @@ export class GitFanout implements GitFanoutInterface {
 
     // sort offsets
     const offsets = sortObject(offsetsTemp);
+
+    // store in file
+    // TODO: should be readable if already exists
+    storeDataInFile(outFile, offsets);
 
     return [offsets, endBytes];
   }

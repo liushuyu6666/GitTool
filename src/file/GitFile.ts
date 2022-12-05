@@ -128,7 +128,7 @@ export class GitFile implements GitFileInterface {
     const objectDir = path.join(outDirR, 'objects');
 
     // TODO: configurable in the .env
-    const packDir = path.join(outDir, 'packs');
+    const packDir = path.join(outDirR, 'packs');
 
     const outDirs = [outDirR, objectDir, packDir];
 

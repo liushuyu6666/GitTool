@@ -28,8 +28,8 @@ export class GitIdxFile implements GitIdxFileInterface {
   fanout: GitFanout;
 
   constructor(filePath: string, outDir: string) {
-    const fileName = filePath.substring(filePath.lastIndexOf(path.sep));
-    const outFile = path.join(outDir, fileName);
+    const fileName = filePath.substring(filePath.lastIndexOf(path.sep), filePath.lastIndexOf('.'));
+    const outFile = path.join(outDir, `${fileName}.json`);
     const content = readFileSync(filePath);
     this.byteSize = content.length;
     this.header = this.parseHeader(content);

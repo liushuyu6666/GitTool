@@ -1,5 +1,5 @@
 import { GitObject } from '../gitObject/GitObject';
-import { isDeltaObject, isOriginalDeltaObject } from '../utils/getGitObjectType';
+import { isPackDeltaObject, isPackOriginalObject } from '../utils/getGitObjectType';
 import { GitIdxFile } from './GitIdxFile';
 import { GitPackFile } from './GitPackFile';
 
@@ -7,6 +7,11 @@ export interface GitPackPairInterface {
   pack: GitPackFile;
 
   idx: GitIdxFile;
+}
+
+export interface GitPackObjects {
+  packOriginalObjects: GitObject[];
+  packDeltaObjects: GitObject[];
 }
 
 export class GitPackPair implements GitPackPairInterface {
@@ -25,14 +30,26 @@ export class GitPackPair implements GitPackPairInterface {
     this.pack = new GitPackFile(filePathPack, this.idx.fanout.offsets);
   }
 
-  generateGitOriginalObject(): GitObject[] {
-    const gitObjects: GitObject[] = [];
+  generateGitPackObjects(): GitPackObjects {
+    const packOriginalObjects: GitObject[] = [];
+    const packDeltaObjects: GitObject[] = [];
 
     for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
       const type = gitObjectEntry.type;
 
-      if (isOriginalDeltaObject(type)) {
-        gitObjects.push(
+      if (isPackOriginalObject(type)) {
+        packOriginalObjects.push(
+          new GitObject({
+            hash,
+            type,
+            size: gitObjectEntry.size,
+            filePath: this.filePathPack,
+            bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
+            bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
+          }),
+        );
+      } else if (isPackDeltaObject(type)) {
+        packDeltaObjects.push(
           new GitObject({
             hash,
             type,
@@ -45,30 +62,56 @@ export class GitPackPair implements GitPackPairInterface {
       }
     }
 
-    return gitObjects;
+    return {
+      packOriginalObjects,
+      packDeltaObjects,
+    };
   }
+
+  // generateGitOriginalObject(): GitObject[] {
+  //   const gitObjects: GitObject[] = [];
+
+  //   for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
+  //     const type = gitObjectEntry.type;
+
+  //     if (isOriginalDeltaObject(type)) {
+  //       gitObjects.push(
+  //         new GitObject({
+  //           hash,
+  //           type,
+  //           size: gitObjectEntry.size,
+  //           filePath: this.filePathPack,
+  //           bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
+  //           bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
+  //         }),
+  //       );
+  //     }
+  //   }
+
+  //   return gitObjects;
+  // }
 
   // TODO: maybe we can combine generateGitDeltaObject with generateGitOriginalObject
-  generateGitDeltaObject(): GitObject[] {
-    const gitObjects: GitObject[] = [];
+  // generateGitDeltaObject(): GitObject[] {
+  //   const gitObjects: GitObject[] = [];
 
-    for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
-      const type = gitObjectEntry.type;
+  //   for (const [hash, gitObjectEntry] of Object.entries(this.pack.layer4)) {
+  //     const type = gitObjectEntry.type;
 
-      if (isDeltaObject(type)) {
-        gitObjects.push(
-          new GitObject({
-            hash,
-            type,
-            size: gitObjectEntry.size,
-            filePath: this.filePathPack,
-            bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
-            bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
-          }),
-        );
-      }
-    }
+  //     if (isDeltaObject(type)) {
+  //       gitObjects.push(
+  //         new GitObject({
+  //           hash,
+  //           type,
+  //           size: gitObjectEntry.size,
+  //           filePath: this.filePathPack,
+  //           bodyOffsetStartIndex: gitObjectEntry.bodyStartIndex,
+  //           bodyOffsetEndIndex: gitObjectEntry.bodyEndIndex,
+  //         }),
+  //       );
+  //     }
+  //   }
 
-    return gitObjects;
-  }
+  //   return gitObjects;
+  // }
 }

@@ -51,6 +51,7 @@ export interface GitInDirObjects {
 export interface GitOutDir {
   outDir: string;
   objectDir: string;
+  packDir: string;
 }
 
 export class GitFile implements GitFileInterface {
@@ -126,7 +127,10 @@ export class GitFile implements GitFileInterface {
     // TODO: configurable in the .env
     const objectDir = path.join(outDirR, 'objects');
 
-    const outDirs = [outDirR, objectDir];
+    // TODO: configurable in the .env
+    const packDir = path.join(outDir, 'packs');
+
+    const outDirs = [outDirR, objectDir, packDir];
 
     outDirs.forEach((dir) => {
       if (!fs.existsSync(dir)) {
@@ -137,6 +141,7 @@ export class GitFile implements GitFileInterface {
     return {
       'outDir': outDirR,
       'objectDir': objectDir,
+      'packDir': packDir
     };
   }
 }

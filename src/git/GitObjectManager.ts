@@ -1,6 +1,6 @@
 import { GitObject, GitObjectInput } from '../gitObject/GitObject';
 import { GitOriginalObjectGenerator } from '../gitObject/GitOriginalObjectGenerator';
-import { GitPackPair } from '../packFile/GitPackPair';
+import { GitPackObjects, GitPackPair } from '../packFile/GitPackPair';
 import fs from 'fs';
 import { GitInDir, GitOutDir } from '../file/GitFile';
 import path from 'path';
@@ -27,26 +27,17 @@ export interface GitObjectManagerInterface {
    * 1. This variable will stay in the memory for a while before storing in a file.
    */
   packDeltaObjectBriefs: GitObject[];
+}
 
-  // commitChain: string; // TODO: later, this level, just parse the commit
-
-  // treeOrchestration: string; // TODO: later, this level, just parse the tree
-
-  // blobContent: string; // TODO: this level, parse blob content, and maybe we need to print out and store in disk
+export interface GitAllObjects {
+  allOriginalObjects: GitObject[];
+  packDeltaObjects: GitObject[];
 }
 
 export class GitObjectManager implements GitObjectManagerInterface {
-  // TODO: still need to think which value need to store here.
-  // TODO: some variable can be get from the json file. if we set update = false, we should get it from the json file.
   originalObjectBriefs: GitObject[];
 
   packDeltaObjectBriefs: GitObject[];
-
-  // commitChain: string;
-
-  // treeOrchestration: string;
-
-  // blobContent: string;
 
   constructor({ inDirs, outDirs }: GitObjectManagerInput) {
     // out directory
@@ -57,20 +48,77 @@ export class GitObjectManager implements GitObjectManagerInterface {
       objects: { independentOriginalObjectPaths, packPathsWithoutExtension },
     } = inDirs;
 
-    this.originalObjectBriefs = this.listAllOriginalObjectBriefsQuickly(
-      independentOriginalObjectPaths,
-      packPathsWithoutExtension,
-      objectDir,
-      false
-    );
+    const {
+      allOriginalObjects,
+      packDeltaObjects
+    } = this.listAllObjectBriefsQuickly(independentOriginalObjectPaths, packPathsWithoutExtension, objectDir, true);
 
-    this.packDeltaObjectBriefs = this.listPackDeltaObjectBriefsQuickly(
-      packPathsWithoutExtension,
-      objectDir,
-      false,
-    );
+    this.originalObjectBriefs = allOriginalObjects;
+    this.packDeltaObjectBriefs = packDeltaObjects;
   }
 
+  // list all objects brief under .git/objects/
+  listAllObjectBriefsQuickly(
+    independentOriginalObjectPaths: string[],
+    packPathsWithoutExtension: string[],
+    objectDir: string,
+    updateOrNot: boolean,
+  ): GitAllObjects {
+    // TODO: should be configurable, and should be prepared by FileManager.
+    const originalObjectBriefsPath = path.join(
+      objectDir,
+      'originalObjectBriefs.json',
+    );
+    const deltaObjectBriefsPath = path.join(
+      objectDir,
+      'deltaObjectBriefs.json',
+    );
+
+    const originalFileExists = fs.existsSync(originalObjectBriefsPath);
+    const deltaFileExists = fs.existsSync(deltaObjectBriefsPath);
+
+    if (originalFileExists && deltaFileExists && !updateOrNot) {
+      // If both file paths exist and no need to update
+      const allOriginalObjects = this.readBriefFromFile(originalObjectBriefsPath);
+      const packDeltaObjects = this.readBriefFromFile(deltaObjectBriefsPath);
+
+      return {
+        allOriginalObjects,
+        packDeltaObjects
+      };
+    } else if (originalFileExists && !deltaFileExists && !updateOrNot) {
+      // If original file exists but delta file doesn't
+      const allOriginalObjects = this.readBriefFromFile(originalObjectBriefsPath);
+      const {
+        packDeltaObjects
+      } = this.listPackObjectBriefs(packPathsWithoutExtension);
+      storeDataInFile(deltaObjectBriefsPath, packDeltaObjects);
+
+      return {
+        allOriginalObjects,
+        packDeltaObjects
+      };
+    } else {
+      // need to update both files
+      const independentOriginalObjects = this.listIndependentOriginalObjectBriefs(independentOriginalObjectPaths);
+      const {
+        packDeltaObjects,
+        packOriginalObjects
+      } = this.listPackObjectBriefs(packPathsWithoutExtension);
+
+      const allOriginalObjects = independentOriginalObjects.concat(packOriginalObjects);
+
+      storeDataInFile(originalObjectBriefsPath, allOriginalObjects);
+      storeDataInFile(deltaObjectBriefsPath, packDeltaObjects);
+
+      return {
+        allOriginalObjects,
+        packDeltaObjects
+      };
+    }
+  }
+
+  // list all object briefs under .git/objects/ whose prefix are 1 byte hex.
   listIndependentOriginalObjectBriefs(
     independentOriginalObjectPaths: string[],
   ): GitObject[] {
@@ -79,119 +127,38 @@ export class GitObjectManager implements GitObjectManagerInterface {
     );
   }
 
-  listPackOriginalObjectBriefs(
-    packPathsWithoutExtension: string[],
-  ): GitObject[] {
-    let objects: GitObject[] = [];
+  // list all object briefs under .git/objects/pack/
+  listPackObjectBriefs(packPathsWithoutExtension: string[]): GitPackObjects {
+    let gitPackOriginalObjects: GitObject[] = [];
+    let gitPackDeltaObjects: GitObject[] = [];
 
     packPathsWithoutExtension.map((filePath) => {
       const packPair = new GitPackPair(`${filePath}.idx`, `${filePath}.pack`);
-      objects = objects.concat(packPair.generateGitOriginalObject());
+      const {
+        packOriginalObjects,
+        packDeltaObjects
+      } = packPair.generateGitPackObjects();
+      gitPackOriginalObjects = gitPackOriginalObjects.concat(packOriginalObjects);
+      gitPackDeltaObjects = gitPackDeltaObjects.concat(packDeltaObjects);
     });
 
-    return objects;
-  }
-
-  listAllOriginalObjectBriefs(
-    independentOriginalObjectPaths: string[],
-    packPathsWithoutExtension: string[],
-  ): GitObject[] {
-    const originalObjects = this.listIndependentOriginalObjectBriefs(
-      independentOriginalObjectPaths,
-    );
-    const packObjects = this.listPackOriginalObjectBriefs(
-      packPathsWithoutExtension,
-    );
-    return originalObjects.concat(packObjects);
-  }
-
-  listAllOriginalObjectBriefsQuickly(
-    independentOriginalObjectPaths: string[],
-    packPathsWithoutExtension: string[],
-    objectDir: string,
-    updateOrNot: boolean,
-  ): GitObject[] {
-    // TODO: should be configurable, and should be prepared by FileManager.
-    const originalObjectBriefsPath = path.join(
-      objectDir,
-      'originalObjectBriefs.json',
-    );
-    const fileExists = fs.existsSync(originalObjectBriefsPath);
-
-    // If file exists and no need to update, just read from the file.
-    if (fileExists && !updateOrNot) {
-      const originalObjectBriefs = JSON.parse(
-        fs.readFileSync(originalObjectBriefsPath).toString(),
-      ) as unknown as GitObjectInput[];
-      return originalObjectBriefs.map((brief) => new GitObject({
-        hash: brief.hash,
-        type: brief.type,
-        size: brief.size,
-        filePath: brief.filePath,
-        bodyOffsetStartIndex: brief.bodyOffsetStartIndex,
-        bodyOffsetEndIndex: brief.bodyOffsetEndIndex
-      }));
+    return {
+      packOriginalObjects: gitPackOriginalObjects,
+      packDeltaObjects: gitPackDeltaObjects
     }
-
-    // Otherwise, generate a new one and save into file.
-    const originalObjectBriefs = this.listAllOriginalObjectBriefs(
-      independentOriginalObjectPaths,
-      packPathsWithoutExtension,
-    );
-    storeDataInFile(originalObjectBriefsPath, originalObjectBriefs);
-    return originalObjectBriefs;
   }
 
-  listPackDeltaObjectBriefs(packPathsWithoutExtension: string[]): GitObject[] {
-    let objects: GitObject[] = [];
-
-    packPathsWithoutExtension.forEach((filePath) => {
-      const packPair = new GitPackPair(`${filePath}.idx`, `${filePath}.pack`);
-      objects = objects.concat(packPair.generateGitDeltaObject());
-    });
-
-    return objects;
+  readBriefFromFile(path: string): GitObject[] {
+    const briefs = JSON.parse(
+      fs.readFileSync(path).toString(),
+    ) as unknown as GitObjectInput[];
+    return briefs.map((brief) => new GitObject({
+      hash: brief.hash,
+      type: brief.type,
+      size: brief.size,
+      filePath: brief.filePath,
+      bodyOffsetStartIndex: brief.bodyOffsetStartIndex,
+      bodyOffsetEndIndex: brief.bodyOffsetEndIndex
+    }));
   }
-
-  listPackDeltaObjectBriefsQuickly(
-    packPathsWithoutExtension: string[],
-    objectDir: string,
-    updateOrNot: boolean,
-  ): GitObject[] {
-    // TODO: should be configurable, and should be prepared by FileManager.
-    const deltaObjectBriefsPath = path.join(
-      objectDir,
-      'deltaObjectBriefs.json',
-    );
-    const fileExists = fs.existsSync(deltaObjectBriefsPath);
-
-    // If file exists and no need to update, just read from the file.
-    if (fileExists && !updateOrNot) {
-      const deltaObjectBriefs = JSON.parse(
-        fs.readFileSync(deltaObjectBriefsPath).toString(),
-      ) as unknown as GitObjectInput[];
-      return deltaObjectBriefs.map((brief) => new GitObject({
-        hash: brief.hash,
-        type: brief.type,
-        size: brief.size,
-        filePath: brief.filePath,
-        bodyOffsetStartIndex: brief.bodyOffsetStartIndex,
-        bodyOffsetEndIndex: brief.bodyOffsetEndIndex
-      }));
-    }
-
-    // Otherwise, generate a new one and save into file.
-    const deltaObjectBriefs = this.listPackDeltaObjectBriefs(
-      packPathsWithoutExtension,
-    );
-    storeDataInFile(deltaObjectBriefsPath, deltaObjectBriefs);
-    return deltaObjectBriefs;
-  }
-
-  // getSizeInTotal(objectBriefs: GitObject[]): number {
-  //   return objectBriefs.reduce(
-  //     (accumulator, currentValue) => accumulator + currentValue.size,
-  //     0,
-  //   );
-  // }
 }

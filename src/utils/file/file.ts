@@ -39,12 +39,13 @@ export function listAllSubordinatesDFS(dir: string, filePaths: string[], filterR
 
 export function storeDataInFile(filePath: string, data: any) {
     
-  const json = JSON.stringify(data);
+  const json = JSON.stringify(data, null, 2);
   const lastSep = filePath.lastIndexOf(path.sep);
   const prefix = filePath.substring(0, lastSep);
 
   if (fs.existsSync(prefix)) {
     fs.writeFileSync(filePath, json);
+    console.log(`[storeDataInFile]: data stored into ${path.join(filePath)} successfully.`)
   } else {
     throw new Error(`[file path error]: ${path} doesn\'t exist, cannot store data into that`);
   }

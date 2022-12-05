@@ -84,6 +84,9 @@ export class GitObjectManager implements GitObjectManagerInterface {
 
     if (originalFileExists && deltaFileExists && !updateOrNot) {
       // If both file paths exist and no need to update
+      console.log(
+        `[GitObjectManager]: Read from ${originalObjectBriefsPath} and ${deltaObjectBriefsPath}.`,
+      );
       const allOriginalObjects = this.readBriefFromFile(
         originalObjectBriefsPath,
       );
@@ -95,12 +98,15 @@ export class GitObjectManager implements GitObjectManagerInterface {
       };
     } else if (originalFileExists && !deltaFileExists && !updateOrNot) {
       // If original file exists but delta file doesn't
+      console.log(
+        `[GitObjectManager]: Only read from ${originalObjectBriefsPath}, and generate ${deltaObjectBriefsPath}.`,
+      );
       const allOriginalObjects = this.readBriefFromFile(
         originalObjectBriefsPath,
       );
       const { packDeltaObjects } = this.listPackObjectBriefs(
         packPathsWithoutExtension,
-        packDir
+        packDir,
       );
       storeDataInFile(deltaObjectBriefsPath, packDeltaObjects);
 
@@ -110,6 +116,9 @@ export class GitObjectManager implements GitObjectManagerInterface {
       };
     } else {
       // need to update both files
+      console.log(
+        `[GitObjectManager]: generate both ${originalObjectBriefsPath} and ${deltaObjectBriefsPath}.`
+      )
       const independentOriginalObjects =
         this.listIndependentOriginalObjectBriefs(
           independentOriginalObjectPaths,

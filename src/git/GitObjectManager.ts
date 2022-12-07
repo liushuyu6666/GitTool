@@ -54,7 +54,7 @@ export class GitObjectManager implements GitObjectManagerInterface {
         packPathsWithoutExtension,
         objectDir,
         packDir,
-        true,
+        false,
       );
 
     this.originalObjectBriefs = allOriginalObjects;

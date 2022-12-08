@@ -12,8 +12,8 @@ export class GitRefDeltaObjectData implements GitRefDeltaObjectDataInterface {
 
   refDeltaData: RefDeltaObjectInfo;
 
-  constructor(body: Buffer) {
+  constructor(body: Buffer, hash: string) {
     this.type = GitObjectType.REF_DELTA;
-    this.refDeltaData = parseRefDeltaObjectContent(body);
+    this.refDeltaData = parseRefDeltaObjectContent(body, hash);
   }
 }

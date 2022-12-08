@@ -149,10 +149,9 @@ export class GitObject implements GitObjectInterface {
         this.bodyOffsetStartIndex,
         this.bodyOffsetEndIndex,
       );
-      console.log(body.toString('hex'));
       switch (type) {
         case GitObjectType.REF_DELTA:
-          this.data = new GitRefDeltaObjectData(body);
+          this.data = new GitRefDeltaObjectData(body, this.hash);
           break;
       }
     }

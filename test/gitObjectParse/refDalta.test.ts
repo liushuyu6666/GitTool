@@ -1,7 +1,9 @@
 import * as dotenv from 'dotenv';
 import { Git } from '../../src/git/Git';
+import { GitObject } from '../../src/gitObject/GitObject';
 import { GitObjectType } from '../../src/utils/getGitObjectType';
 // import fs from 'fs';
+// import { inflateSync } from 'zlib';
 
 dotenv.config({ path: '.env.localhost.local' });
 dotenv.config({ path: '.env.local' });
@@ -37,25 +39,34 @@ describe('Explore ref_delta', () => {
   //   }
   // })
 
-  test('check one pack original object whose type should be REF_DELTA', () => {
+  test('Check REF_DELTA object with 1, 2, 3 and 4 byte negative offsets', () => {
     const delta_object = git.gitObjectManager.packDeltaObjectBriefs;
-    const target = delta_object.filter((pack) => pack.hash === '49d6f24d33b961876d1574209f2f9d784eca4e9e')[0];
-    target.differentiating();
-    if (target.data?.type === GitObjectType.REF_DELTA) {
-      console.log(target.data.refDeltaData);
-    }
+    const one = delta_object.filter((pack) => pack.hash === '7721a5fd17c81b940d73b327e13c4d4fc66ba1f0')[0];
+    const two = delta_object.filter((pack) => pack.hash === 'e112d6bafc0cd9c5fbeb0627465c2db6e8479cdf')[0];
+    const three = delta_object.filter((pack) => pack.hash === 'f0e5333f7f906bc4e9d76c3c5283c0cda18dc850')[0];
+    const four = delta_object.filter((pack) => pack.hash === '66715f0b9e641a50bcf08f1dd1d6183a887d20f4')[0];
+
+    const testOffset = (object: GitObject, offset: number) => {
+      object.differentiating();
+      if (object.data?.type === GitObjectType.REF_DELTA) {
+        expect(object.data.refDeltaData.negativeOffset).toBe(offset);
+      } else {
+        expect(object.data?.type).toBe(GitObjectType.REF_DELTA)
+      }
+    };
+
+    testOffset(one, 44);
+    testOffset(two, 740);
+    testOffset(three, 83736);
+    testOffset(four, 2276461)
+
   })
 
-  // test('test the pack file', () => {
-  //   const packFile = fs.readFileSync('./gitTest/.git/objects/pack/pack-5eb139577548314dffcb8e6410b30413a81ca3fb.pack');
-  //   const data = packFile.toString('hex');
-  //   console.log(data);
-  //   fs.writeFileSync('packFileContent.txt', JSON.stringify(data));
-  // })
+  // test('check all pack delta objects to parse the delta_ref', () => {
+  //   const delta_objects = git.gitObjectManager.packDeltaObjectBriefs;
 
-  // test('crazy', () => {
-  //   const pack = fs.readFileSync('gitTest/.git/objects/pack/pack-13995ffd6c5efdbeb96104a3c58d178c73a77926.pack');
-  //   const bytes = pack.subarray(8118, 8165).toString('hex');
-  //   fs.writeFileSync('crazy.txt', bytes);
+  //   delta_objects.forEach((delta) => {
+  //     delta.differentiating()
+  //   })
   // })
 })

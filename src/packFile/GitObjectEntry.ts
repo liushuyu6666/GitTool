@@ -36,15 +36,15 @@ export class GitObjectEntry implements GitObjectEntryInterface {
     this.bodyEndIndex = endIndex;
   }
 
-  // TODO: ManipulateBuffer should be recycled.
+  // TODO: use getFirstVariableLengthIntegerFromWithType function test/gitObjectParse/getFirstVariableLengthInteger.ts
   getSize(chunk: Buffer): [number, number] {
     const manipulateBuffer = new ManipulateBuffer(false);
-    let msb: boolean = chunk[0] > 0b10000000;
+    let msb: boolean = chunk[0] >= 0b10000000;
     let index = 1;
     manipulateBuffer.fill(chunk[0], 4, 8);
     while (msb) {
       manipulateBuffer.fill(chunk[index], 1, 8);
-      msb = chunk[index] > 0b10000000
+      msb = chunk[index] >= 0b10000000
       index++;
     }
     manipulateBuffer.finish();

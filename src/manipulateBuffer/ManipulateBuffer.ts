@@ -145,13 +145,9 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
     const rightLeft = this.capacityOfShuttle;
     this.fill(0b00000000, 0, this.capacityOfShuttle);
 
-    console.log(`stock is ${this.stock.toString('hex')}`);
-
     if (this.isBE) {
       buffershift.shr(this.stock, rightLeft);
     }
-
-    console.log(`after shift stock is ${this.stock.toString('hex')}`);
   }
 
   readIntBE(): number {

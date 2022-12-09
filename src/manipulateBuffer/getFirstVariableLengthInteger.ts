@@ -29,14 +29,10 @@ export function getFirstVariableLengthIntegerFromWithType(buffer: Buffer, isBE: 
  */
 export function getFirstVariableLengthIntegerFromWithoutType(buffer: Buffer, isBE: boolean): [number, number] {
   const manipulateBuffer = new ManipulateBuffer(isBE);
-  console.log(`initial shuttle: ${manipulateBuffer.shuttle}`);
 
-  console.log(`buffer is ${buffer.toString('hex')}`);
   let msb: boolean = buffer[0] >= 0b10000000;
   let index = 1;
   manipulateBuffer.fill(buffer[0], 1, 8);
-  console.log(`msb is ${msb}`);
-  console.log(`shuttle is ${manipulateBuffer.shuttle}`);
   while (msb) {
     manipulateBuffer.fill(buffer[index], 1, 8);
     msb = buffer[index] >= 0b10000000

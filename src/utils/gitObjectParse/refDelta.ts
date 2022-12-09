@@ -16,8 +16,6 @@ export function parseRefDeltaObjectContent(
   const marginValue = getMarginValue(startIndex);
   const negativeOffset = negativeOffsetBeforeMarginValue + marginValue;
 
-  console.log(`marginValue is ${marginValue} and negativeOffsetBeforeMarginValue is ${negativeOffsetBeforeMarginValue}`);
-
   const deflate = body.subarray(startIndex);
 
   try {

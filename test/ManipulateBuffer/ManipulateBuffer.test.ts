@@ -51,10 +51,10 @@ describe('test ManipulateBuffer class', () => {
 
     test('load multiple bytes', () => {
       stock.fill(0b10100111, 3, 8); // 0bxxx00111 shuttle: 0 ,shuttle: 00111000.
-      stock.fill(0b01010101, 1, 8); // 0bx1010101 shuttle: 00111101, shuttle: 01010000.
-      stock.fill(0b10010100, 1, 7); // 0bx001010x shuttle: 01010010, shuttle: 10000000.
-      stock.fill(0b11111101, 0, 8); // 0b11111101 shuttle: 10111111, shuttle: 01000000.
-      stock.fill(0b01010101, 3, 5); // 0bxxx10xxx shuttle: x       , shuttle: 01100000.
+      stock.fill(0b01010101, 1, 8); // 0bx1010101 stock: 00111101, shuttle: 01010000.
+      stock.fill(0b10010100, 1, 7); // 0bx001010x stock: 01010010, shuttle: 10000000.
+      stock.fill(0b11111101, 0, 8); // 0b11111101 stock: 10111111, shuttle: 01000000.
+      stock.fill(0b01010101, 3, 5); // 0bxxx10xxx stock: null       , shuttle: 01100000.
 
       // [00111101, 01010010, 10111111]
 
@@ -73,12 +73,12 @@ describe('test ManipulateBuffer class', () => {
       stock.fill(0b01010101, 3, 5); // 0bxxx10xxx
       stock.finish();
 
-      // [00111101, 01010010, 10111111, 01100000]
+      // [00000011, 11010101, 00101011,11110110]
 
       expect(stock.shuttle).toBe(0b00000000); // left alignment
       expect(stock.capacityOfShuttle).toBe(8);
       expect(stock.stock).toEqual(
-        Buffer.from([0b00111101, 0b01010010, 0b10111111, 0b01100000]),
+        Buffer.from([0b00000011, 0b11010101, 0b00101011, 0b11110110]),
       );
     });
 
@@ -92,7 +92,7 @@ describe('test ManipulateBuffer class', () => {
 
       expect(stock.readIntBE()).toBe(
         Buffer.from([
-          0b00111101, 0b01010010, 0b10111111, 0b01100000,
+          0b00000011, 0b11010101, 0b00101011, 0b11110110,
         ]).readInt32BE(),
       ); // left alignment
     });
@@ -128,16 +128,16 @@ describe('test ManipulateBuffer class', () => {
     });
 
     test('load 0bx10011xx to the empty shuttle, then load 0bxx10xxxx, the shuttle is not full', () => {
-      stock.fill(0b01001111, 1, 6);
-      stock.fill(0b10101111, 2, 4);
+      stock.fill(0b01001111, 1, 6); // 10011
+      stock.fill(0b10101111, 2, 4); // 101
 
       expect(stock.shuttle).toBe(0b01010011); // right alignment
       expect(stock.capacityOfShuttle).toBe(1);
     });
 
     test('load 0bx10011xx to the empty shuttle, then load 0bxx1011xx, the shuttle is full', () => {
-      stock.fill(0b01001111, 1, 6);
-      stock.fill(0b10101111, 2, 6);
+      stock.fill(0b01001111, 1, 6); // 10011
+      stock.fill(0b10101111, 2, 6); // 1011
 
       expect(stock.shuttle).toBe(0b00000001);
       expect(stock.capacityOfShuttle).toBe(7);
@@ -154,7 +154,7 @@ describe('test ManipulateBuffer class', () => {
       expect(stock.shuttle).toBe(0b00001011); // right alignment
       expect(stock.capacityOfShuttle).toBe(4);
       expect(stock.stock).toEqual(
-        Buffer.from([0b11110100, 0b10101010, 0b10100111]),
+        Buffer.from([0b11110100, 0b10101010, 0b10100111]), // 00001011, 11110100, 10101010, 10100111
       );
     });
 

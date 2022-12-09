@@ -1,5 +1,19 @@
-const BYTE_POWER = Math.pow(2, 8);
+const buffershift = require('buffershift');
 
+export const BYTE_POWER = Math.pow(2, 8);
+
+/**
+ * This is for extract variable length integer from bytes.
+ * 
+ * If there are two binary variable, variable_a = 10100 and variable_b = 1100011.
+ * 
+ * For BE (isBE is true): The former variable will be more significant. So, variable_a will be
+ * put in front of variable_b. The answer becomes 0000(1010, 01100011).
+ * 
+ * 
+ * For LE (isBE is false): The latter variable will be more significant. So, variable_b will be
+ * put in front of variable_a, The answer becomes 0000(1100, 01110100).
+ */
 export interface ManipulateBufferInterface {
   stock: Buffer;
 
@@ -128,7 +142,16 @@ export class ManipulateBuffer implements ManipulateBufferInterface {
   }
 
   finish() {
+    const rightLeft = this.capacityOfShuttle;
     this.fill(0b00000000, 0, this.capacityOfShuttle);
+
+    console.log(`stock is ${this.stock.toString('hex')}`);
+
+    if (this.isBE) {
+      buffershift.shr(this.stock, rightLeft);
+    }
+
+    console.log(`after shift stock is ${this.stock.toString('hex')}`);
   }
 
   readIntBE(): number {

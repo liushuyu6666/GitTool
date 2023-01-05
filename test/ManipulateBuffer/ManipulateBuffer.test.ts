@@ -1,6 +1,6 @@
 import { ManipulateBuffer } from '../../src/manipulateBuffer/ManipulateBuffer';
 
-describe('test ManipulateBuffer class', () => {
+describe('Test ManipulateBuffer class, both BE = true or BE = false:', () => {
   let stock: ManipulateBuffer;
 
   describe('test when BE = true', () => {
@@ -50,11 +50,11 @@ describe('test ManipulateBuffer class', () => {
     });
 
     test('load multiple bytes', () => {
-      stock.fill(0b10100111, 3, 8); // 0bxxx00111 shuttle: 0 ,shuttle: 00111000.
-      stock.fill(0b01010101, 1, 8); // 0bx1010101 stock: 00111101, shuttle: 01010000.
-      stock.fill(0b10010100, 1, 7); // 0bx001010x stock: 01010010, shuttle: 10000000.
-      stock.fill(0b11111101, 0, 8); // 0b11111101 stock: 10111111, shuttle: 01000000.
-      stock.fill(0b01010101, 3, 5); // 0bxxx10xxx stock: null       , shuttle: 01100000.
+      stock.fill(0b10100111, 3, 8); // 0bxxx00111 new stock: null    , shuttle: 00111xxx.
+      stock.fill(0b01010101, 1, 8); // 0bx1010101 new stock: 00111101, shuttle: 0101xxxx.
+      stock.fill(0b10010100, 1, 7); // 0bx001010x new stock: 01010010, shuttle: 10xxxxxx.
+      stock.fill(0b11111101, 0, 8); // 0b11111101 new stock: 10111111, shuttle: 01xxxxxx.
+      stock.fill(0b01010101, 3, 5); // 0bxxx10xxx new stock: null    , shuttle: 0110xxxx.
 
       // [00111101, 01010010, 10111111]
 

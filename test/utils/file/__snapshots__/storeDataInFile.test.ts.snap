@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the storeDataInFile function Saving the data in the json file 1`] = `
+"{
+  "hash": "test111111111111",
+  "type": "blob",
+  "size": 1,
+  "filePath": "test_object",
+  "bodyOffsetStartIndex": 34,
+  "bodyOffsetEndIndex": 100
+}"
+`;
+
+exports[`Test the storeDataInFile function: Saving the data in the json file. 1`] = `
+"{
+  "hash": "test111111111111",
+  "type": "blob",
+  "size": 1,
+  "filePath": "test_object",
+  "bodyOffsetStartIndex": 34,
+  "bodyOffsetEndIndex": 100
+}"
+`;

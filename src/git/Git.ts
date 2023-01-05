@@ -1,5 +1,5 @@
 import { GitFile } from "../file/GitFile";
-import { GitObjectManager } from "./GitObjectManager";
+import { GitObjectManager } from "../object/GitObjectManager";
 
 export interface GitInterface {
   gitFileManager: GitFile;
@@ -18,7 +18,7 @@ export class Git implements GitInterface {
 
     this.gitObjectManager = new GitObjectManager({
       inDirs: this.gitFileManager.inDirs,
-      outDirs: this.gitFileManager.outDirs
+      outDir: this.gitFileManager.outDir
     });
   }
 

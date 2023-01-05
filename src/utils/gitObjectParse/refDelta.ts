@@ -1,35 +1,31 @@
 import { inflateSync } from 'zlib';
-import { getFirstVariableLengthIntegerFromWithoutType } from '../../manipulateBuffer/getFirstVariableLengthInteger';
-import getMarginValue from '../getMarginValue';
+import parseInstructions, { GitInstructions } from '../parseInstruction/parseInstructions';
 
 export interface RefDeltaObjectInfo {
-  negativeOffset: number;
-  inflate?: Buffer;
+  instructions?: GitInstructions;
+  baseHash?: string;
 }
 
 export function parseRefDeltaObjectContent(
   body: Buffer,
   hash: string,
 ): RefDeltaObjectInfo {
-  const [negativeOffsetBeforeMarginValue, startIndex] =
-    getFirstVariableLengthIntegerFromWithoutType(body, true);
-  const marginValue = getMarginValue(startIndex);
-  const negativeOffset = negativeOffsetBeforeMarginValue + marginValue;
-
-  const deflate = body.subarray(startIndex);
+  const baseHash = body.subarray(0, 20).toString('hex');
+  const deflate = body.subarray(20);
 
   try {
     const inflate = inflateSync(deflate);
+    const instructions = parseInstructions(inflate);
     return {
-      negativeOffset,
-      inflate,
+      instructions,
+      baseHash
     };
   } catch {
     console.error(
-      `${hash} can not be inflated: negativeOffset is ${negativeOffset}`,
+      `[inflate decoding error]: ${hash} (REF_DELTA) can not be inflated.`,
     );
     return {
-      negativeOffset,
+      baseHash,
     };
   }
 }

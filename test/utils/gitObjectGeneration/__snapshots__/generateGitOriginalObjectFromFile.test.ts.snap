@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test generateGitOriginalObjectFromFile, which generates brief object from file. Here three type need to be tested: Test the blob object 1`] = `
+GitObject {
+  "bodyOffsetEndIndex": 59,
+  "bodyOffsetStartIndex": 8,
+  "data": undefined,
+  "filePath": "gitTestSimple/.git/objects/21/29cac3bcef43797f755ba6105c32d4a3f1ace0",
+  "hash": "2129cac3bcef43797f755ba6105c32d4a3f1ace0",
+  "prefix": "21",
+  "size": 51,
+  "suffix": "29cac3bcef43797f755ba6105c32d4a3f1ace0",
+  "type": "blob",
+}
+`;
+
+exports[`Test generateGitOriginalObjectFromFile, which generates brief object from file. Here three type need to be tested: Test the commit object 1`] = `
+GitObject {
+  "bodyOffsetEndIndex": 253,
+  "bodyOffsetStartIndex": 11,
+  "data": undefined,
+  "filePath": "gitTestSimple/.git/objects/7c/556ca93b467f8f8247acf522915f2f9e048eb5",
+  "hash": "7c556ca93b467f8f8247acf522915f2f9e048eb5",
+  "prefix": "7c",
+  "size": 242,
+  "suffix": "556ca93b467f8f8247acf522915f2f9e048eb5",
+  "type": "commit",
+}
+`;
+
+exports[`Test generateGitOriginalObjectFromFile, which generates brief object from file. Here three type need to be tested: Test the tree object 1`] = `
+GitObject {
+  "bodyOffsetEndIndex": 43,
+  "bodyOffsetStartIndex": 8,
+  "data": undefined,
+  "filePath": "gitTestSimple/.git/objects/32/6ae25c4e61cba56782e9e37a19d0bbcf9b694e",
+  "hash": "326ae25c4e61cba56782e9e37a19d0bbcf9b694e",
+  "prefix": "32",
+  "size": 35,
+  "suffix": "6ae25c4e61cba56782e9e37a19d0bbcf9b694e",
+  "type": "tree",
+}
+`;

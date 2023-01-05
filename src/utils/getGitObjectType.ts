@@ -17,8 +17,8 @@ export const GitPackObjectType: Record<number, GitObjectType> = {
   2: GitObjectType.TREE_DELTA,
   3: GitObjectType.BLOB_DELTA,
   4: GitObjectType.TAG_DELTA,
-  5: GitObjectType.OFS_DELTA,
-  6: GitObjectType.REF_DELTA,
+  6: GitObjectType.OFS_DELTA,
+  7: GitObjectType.REF_DELTA,
 };
 
 export default function (type: string | number): GitObjectType {

@@ -1,0 +1,3 @@
+hash,prefix,suffix,type,size,filePath,bodyOffsetStartIndex,bodyOffsetEndIndex
+test111111111111,te,st111111111111,blob,1,test_object,34,100,
+test222222222222,te,st222222222222,blob,2,test_object2,13,100,

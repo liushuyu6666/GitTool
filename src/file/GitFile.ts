@@ -1,13 +1,12 @@
 import path from 'path';
 import { listAllSubordinatesDFS } from '../utils/file/file';
-import fs from 'fs';
 
 export interface GitFileInterface {
   rootDir: string;
 
-  outDirs: GitOutDir;
-
   inDirs: GitInDir;
+
+  outDir: string;
 
   listIndependentOriginalObjectPathsUnderObjectsFolder(objectsDir: string): string[];
 
@@ -16,9 +15,6 @@ export interface GitFileInterface {
   listInfoPathsUnderObjectsFolder(objectsDir: string): string[];
 
   createInDir(rootDir: string): GitInDir;
-
-  createOutDir(rootDir: string): GitOutDir;
-
 }
 
 export interface GitInDir {
@@ -48,23 +44,17 @@ export interface GitInDirObjects {
   infoPaths: string[];
 }
 
-export interface GitOutDir {
-  outDir: string;
-  objectDir: string;
-  packDir: string;
-}
-
 export class GitFile implements GitFileInterface {
   rootDir: string;
 
-  outDirs: GitOutDir;
+  outDir: string;
 
   inDirs: GitInDir;
 
   constructor(rootDir: string, outDir: string) {
     this.rootDir = rootDir;
     this.inDirs = this.createInDir(rootDir);
-    this.outDirs = this.createOutDir(outDir);
+    this.outDir = outDir;
   }
 
   listIndependentOriginalObjectPathsUnderObjectsFolder(objectsDir: string): string[] {
@@ -120,28 +110,5 @@ export class GitFile implements GitFileInterface {
     }
 
     return inDir;
-  }
-
-  createOutDir(outDir: string): GitOutDir {
-    const outDirR = outDir.length > 0 ? outDir : './outDir';
-    // TODO: configurable in the .env
-    const objectDir = path.join(outDirR, 'objects');
-
-    // TODO: configurable in the .env
-    const packDir = path.join(outDirR, 'packs');
-
-    const outDirs = [outDirR, objectDir, packDir];
-
-    outDirs.forEach((dir) => {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-    })
-
-    return {
-      'outDir': outDirR,
-      'objectDir': objectDir,
-      'packDir': packDir
-    };
   }
 }
